@@ -16,11 +16,13 @@
 <table>
 	<tr>
 		<th>Column</th>
+		<th>Type</th>
 		<th>Constraints</th>
 	</tr>
 	<c:forEach items="${table.getFields()}" var="field">
 		<tr>
 			<td>${field.getName()}</td>
+			<td>${field.getFieldType()}</td>
 			<td>${field.getFieldConstraintString()}</td>
 		</tr>
 	</c:forEach>

@@ -11,6 +11,7 @@ import core.DBConnector;
 import crud.orm.TableORM;
 import model.Field;
 import model.FieldConstraint;
+import model.FieldType;
 import model.Table;
 
 public class TableCrud {
@@ -36,14 +37,15 @@ public class TableCrud {
             }
             table.setId(pk);
 			for(Field f: table.getFields()) {
-				st = sqlConnection.prepareStatement("insert into table_fields(table_id, fieldname, constraints) values(?, ?, ?)");
+				st = sqlConnection.prepareStatement("insert into table_fields(table_id, fieldtype, fieldname, constraints) values(?, ?, ?, ?)");
 				st.setInt(1, pk);
-				st.setString(2, f.getName());
+				st.setString(2, f.getFieldType().toString());
+				st.setString(3, f.getName());
 				StringBuilder constraints = new StringBuilder("");
 				for(FieldConstraint fc: f.getFieldConstraint()) {
 					constraints.append(fc).append(',');
 				}
-				st.setString(3, constraints.toString().substring(0, constraints.length() - 1));
+				st.setString(4, constraints.toString().substring(0, constraints.length() - 1));
 				st.executeUpdate();
 			}
 			orm.create(table);
@@ -89,14 +91,15 @@ public class TableCrud {
 			if(rs.next()) {
 				table.setId(id);
 				table.setName(rs.getString(2));
-				st = sqlConnection.prepareStatement("select fieldname,constraints from table_fields where table_id=?");
+				st = sqlConnection.prepareStatement("select fieldname,fieldtype,constraints from table_fields where table_id=?");
 				st.setInt(1, id);
 				ResultSet rs2 = st.executeQuery();
 				ArrayList<Field> fields = new ArrayList<Field>();
 				while(rs2.next()) {
 					Field field = new Field();
 					field.setName(rs2.getString(1));
-					String[] constrts = rs2.getString(2).split(",");
+					field.setFieldType(FieldType.valueOf(rs2.getString(2)));
+					String[] constrts = rs2.getString(3).split(",");
 					ArrayList<FieldConstraint> constraints = new ArrayList<FieldConstraint>();
 					for(String s: constrts) {
 						constraints.add(FieldConstraint.valueOf(s));

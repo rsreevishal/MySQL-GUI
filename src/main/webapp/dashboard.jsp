@@ -33,7 +33,7 @@
 					</form>
 				</li>
 				<li>
-					<form action="" method="get">
+					<form action="/mysqlgui/InsertTableRecord" method="get">
 						<button type="submit">Insert record</button>
 					</form>
 				</li>

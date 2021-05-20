@@ -23,7 +23,13 @@ public class TableDetails extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int id = Integer.parseInt(request.getParameter("tableid"));
+		
+		int id = 0;
+		if(request.getParameter("tableid") != null) {
+			id = Integer.parseInt(request.getParameter("tableid"));
+		} else if(request.getAttribute("tableid") != null) {
+			id = (Integer)request.getAttribute("tableid");
+		}
 		Table table = tableCrud.get(id);
 		request.setAttribute("table", table);
 		doGet(request, response);

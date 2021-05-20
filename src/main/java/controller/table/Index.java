@@ -51,6 +51,7 @@ public class Index extends HttpServlet {
 		table.setFields(fields);
 		table = tableCrud.create(table);
 		request.setAttribute("table", table);
+		request.setAttribute("tableid", table.getId());
 		RequestDispatcher rd = request.getRequestDispatcher("/TableDetails");
 		rd.forward(request, response);
 	}

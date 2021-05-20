@@ -54,14 +54,24 @@ public class TableORM {
 					case PRIMARY_KEY: {
 						query = String.format("ALTER TABLE %s ADD CONSTRAINT %s %s (%s);", tablename, "pk_" + tablename,
 								"PRIMARY KEY", fieldname);
+						PreparedStatement st = sqlConnection.prepareStatement(query);
+						st.executeUpdate();
+						query = String.format("ALTER TABLE %s MODIFY %s %s NOT NULL AUTO_INCREMENT;", tablename,
+								fieldname, FieldType.filter(fieldtype));
+						st = sqlConnection.prepareStatement(query);
+						st.executeUpdate();
 						break;
 					}
 					case UNIQUE: {
 						query = String.format("ALTER TABLE %s ADD UNIQUE (%s);", tablename, fieldname);
+						PreparedStatement st = sqlConnection.prepareStatement(query);
+						st.executeUpdate();
 						break;
 					}
 					case NOT_NULL: {
 						query = String.format("ALTER TABLE %s MODIFY %s %s NOT NULL;", tablename, fieldname, FieldType.filter(fieldtype));	
+						PreparedStatement st = sqlConnection.prepareStatement(query);
+						st.executeUpdate();
 						break;
 					}
 					case NONE: {
@@ -69,11 +79,6 @@ public class TableORM {
 					}
 					default: {
 					}
-				}
-				if(query != null) {
-					System.out.println("Query: " + query);
-					PreparedStatement st = sqlConnection.prepareStatement(query);
-					st.executeUpdate();
 				}
 			}
 		} catch (SQLException e) {
