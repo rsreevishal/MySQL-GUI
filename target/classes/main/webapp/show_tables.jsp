@@ -8,19 +8,25 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>MySql GUI | show tables</title>
+<title>MySql GUI | Show Tables</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
 </head>
 <body>
-<h1>Tables</h1>
-<form action="/mysqlgui/Dashboard" method="get">
-	<button type="submit">Back</button>
-</form>
-<table>
+<div class="container text-center">
+<h1 class="display-4">Tables</h1>
+<a href="/mysqlgui/Dashboard" class="btn btn-primary" role="button">Back</a>
+<hr class="my-4"/>
+<table class="table">
+<thead>
 <tr>
-	<th>Table name</th>
-	<th># of columns</th>
-	<th>Action</th>
+	<th scope="col">Table name</th>
+	<th scope="col"># of columns</th>
+	<th scope="col">Action</th>
 </tr>
+</thead>
+<tbody>
 <c:forEach items="${tables}" var="table">
 <tr>
 	<td>${table.getName()}</td>
@@ -28,11 +34,13 @@
 	<td>
 		<form action="/mysqlgui/TableDetails" method="post">
 			<input type="hidden" value="${table.getId()}" name="tableid"/>
-			<button type="submit">View</button>
+			<button class="btn btn-secondary" type="submit">View</button>
 		</form>
 	<td>
 </tr>
 </c:forEach>
+</tbody>
 </table>
+</div>
 </body>
 </html>
