@@ -15,27 +15,25 @@
 </head>
 <body>
 	<div class="container text-center">
-		<div class="jumbotron" style="background-color:transparent !important;">
+		<div class="jumbotron"
+			style="background-color: transparent !important;">
 			<h1 class="display-4">MySql GUI</h1>
 			<p class="lead">A Graphical User Interface for MySql DB.</p>
 			<hr class="my-4">
-			<p class="lead"><form action="/mysqlgui/Auth" method="post">
+			<p class="lead">
+			<form action="/mysqlgui/Auth" method="post">
 				<div class="form-group">
-		<label for="field1">Username</label>
-		<input class="form-control-sm" id="field1" type="text" name="username"
-						required /><br />
+					<label for="field1">Username</label> <input class="form-control-sm"
+						id="field1" type="text" name="username" required /><br />
+				</div>
+				<div class="form-group">
+					<label for="field2">Password</label> <input class="form-control-sm"
+						id="field2" type="password" name="password" required /><br />
+				</div>
+				<button class="btn btn-primary" type="submit">Login</button>
+			</form>
+			<a class="btn btn-success" href="/mysqlgui/SignUp" role="btn">Sign Up</a>
+		</div>
 	</div>
-	<div class="form-group">
-		<label for="field2">Password</label>
-		<input class="form-control-sm" id="field2" type="password"
-						name="password" required /><br />	
-	</div>
-	<button class="btn btn-primary" type="submit">Login</button>
-</form></p>
-			
-</div>
-
-
-</div>
 </body>
 </html>

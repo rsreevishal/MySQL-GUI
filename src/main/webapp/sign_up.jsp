@@ -1,6 +1,10 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
 <head>
-<title>MySql GUI | Index</title>
+<meta charset="UTF-8">
+<title>MySql GUI | Sign Up</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"
 	integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
 	crossorigin="anonymous"></script>
@@ -20,8 +24,9 @@
 			<h1 class="display-4">MySql GUI</h1>
 			<p class="lead">A Graphical User Interface for MySql DB.</p>
 			<hr class="my-4">
+			<p class="h4">Sign Up</p>
 			<p class="lead">
-			<form action="/mysqlgui/Auth" method="post">
+			<form action="/mysqlgui/SignUp" method="post">
 				<div class="form-group">
 					<label for="field1">Username</label> <input class="form-control-sm"
 						id="field1" type="text" name="username" required /><br />
@@ -30,9 +35,8 @@
 					<label for="field2">Password</label> <input class="form-control-sm"
 						id="field2" type="password" name="password" required /><br />
 				</div>
-				<button class="btn btn-primary" type="submit">Login</button>
+				<button class="btn btn-primary" type="submit">SignUp</button>
 			</form>
-			<a class="btn btn-success" href="/mysqlgui/SignUp" role="btn">Sign Up</a>
 		</div>
 	</div>
 </body>

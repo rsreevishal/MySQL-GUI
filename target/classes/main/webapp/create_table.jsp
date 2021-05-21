@@ -21,6 +21,10 @@
 	<div class="container text-center">
 		<h1 class="display-4">Create a table</h1>
 		<a href="/mysqlgui/Dashboard" class="btn btn-primary" role="button">Back</a>
+		<ol class="text-left">
+			<li><p>Only one PRIMARY_KEY allowed</p></li>
+			<li><p>If there is no constraints then choose NONE</p></li>
+		</ol>
 		<hr class="my-4" />
 		<form action="/mysqlgui/TableIndex" method="post">
 			<div class="form-group">
@@ -38,17 +42,20 @@
 </body>
 <script>
 	var fieldCount = 0;
-	function getCheckBox(id,label,value) {
+	function getCheckBox(id,label,value, selected) {
+		if(selected) {
+			return `<div class="form-check form-check-inline"><input checked class="form-check-input" name="constraint" type="checkbox" value="${value}"/><label class="form-check-label" for="${id}">${label}</label></div>`
+		}
 		return `<div class="form-check form-check-inline"><input class="form-check-input" name="constraint" type="checkbox" value="${value}"/><label class="form-check-label" for="${id}">${label}</label></div>`
 	}
 	$(document).ready(() => {
-		var fieldTemplate = `<li class="list-groupt-item"><div><input class="form-control-sm" type="text" required name="field"/><select required name="type"><option value="INT">INT</option><option value="VARCHAR">VARCHAR</option></select>${getCheckBox("pk", "PRIMARY KEY", fieldCount+"PRIMARY_KEY")}${getCheckBox("notnull", "NOT NULL", fieldCount+"NOT_NULL")}${getCheckBox("uniq", "UNIQUE", fieldCount+"UNIQUE")}${getCheckBox("none", "NONE", fieldCount+"NONE")}</div></li>`
+		var fieldTemplate = `<li id="f_${fieldCount}" class="list-groupt-item"><div><input class="form-control-sm" type="text" required name="field"/><select required name="type"><option value="INT">INT</option><option value="VARCHAR">VARCHAR</option></select>${getCheckBox(fieldCount+"pk", "PRIMARY KEY", fieldCount+"PRIMARY_KEY")}${getCheckBox(fieldCount+"notnull", "NOT NULL", fieldCount+"NOT_NULL")}${getCheckBox(fieldCount+"uniq", "UNIQUE", fieldCount+"UNIQUE")}${getCheckBox(fieldCount+"none", "NONE", fieldCount+"NONE", true)}</div></li>`
 		$("#fields").append(fieldTemplate);
 		fieldCount += 1;
 	});
 	$("#addField").on('click', (e) => {
 		e.preventDefault();
-		var fieldTemplate = `<li class="list-groupt-item"><div><input class="form-control-sm" type="text" required name="field"/><select required name="type"><option value="INT">INT</option><option value="VARCHAR">VARCHAR</option></select>${getCheckBox("pk", "PRIMARY KEY", fieldCount+"PRIMARY_KEY")}${getCheckBox("notnull", "NOT NULL", fieldCount+"NOT_NULL")}${getCheckBox("uniq", "UNIQUE", fieldCount+"UNIQUE")}${getCheckBox("none", "NONE", fieldCount+"NONE")}</div></li>`
+		var fieldTemplate = `<li id="f_${fieldCount}" class="list-groupt-item"><div><input class="form-control-sm" type="text" required name="field"/><select required name="type"><option value="INT">INT</option><option value="VARCHAR">VARCHAR</option></select>${getCheckBox(fieldCount+"pk", "PRIMARY KEY", fieldCount+"PRIMARY_KEY")}${getCheckBox(fieldCount+"notnull", "NOT NULL", fieldCount+"NOT_NULL")}${getCheckBox(fieldCount+"uniq", "UNIQUE", fieldCount+"UNIQUE")}${getCheckBox(fieldCount+"none", "NONE", fieldCount+"NONE", true)}</div></li>`
 		$("#fields").append(fieldTemplate);
 		fieldCount += 1;
 	});

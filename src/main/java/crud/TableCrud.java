@@ -27,7 +27,7 @@ public class TableCrud {
 	
 	public Table create(Table table) {
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("insert into tables(tablename) values(?)", Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_tables(tablename) values(?)", Statement.RETURN_GENERATED_KEYS);
 			st.setString(1, table.getName());
 			st.executeUpdate();
 			ResultSet rs = st.getGeneratedKeys();
@@ -37,7 +37,7 @@ public class TableCrud {
             }
             table.setId(pk);
 			for(Field f: table.getFields()) {
-				st = sqlConnection.prepareStatement("insert into table_fields(table_id, fieldtype, fieldname, constraints) values(?, ?, ?, ?)");
+				st = sqlConnection.prepareStatement("insert into mysqlgui_table_fields(table_id, fieldtype, fieldname, constraints) values(?, ?, ?, ?)");
 				st.setInt(1, pk);
 				st.setString(2, f.getFieldType().toString());
 				st.setString(3, f.getName());
@@ -58,7 +58,7 @@ public class TableCrud {
 	
 	public void delete(String tablename, int id) {
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("delete from tables where id=?;");
+			PreparedStatement st = sqlConnection.prepareStatement("delete from mysqlgui_tables where id=?;");
 			st.setInt(1, id);
 			st.executeUpdate();
 			orm.delete(tablename);
@@ -68,7 +68,7 @@ public class TableCrud {
 	}
 	public ArrayList<Table> getAll() {
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("select id,tablename from tables;");
+			PreparedStatement st = sqlConnection.prepareStatement("select id,tablename from mysqlgui_tables;");
 			ResultSet rs = st.executeQuery();
 			ArrayList<Table> tables = new ArrayList<Table>();
 			while(rs.next()) {
@@ -84,14 +84,14 @@ public class TableCrud {
 	
 	public Table get(int id) {
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("select id,tablename from tables where id=?;");
+			PreparedStatement st = sqlConnection.prepareStatement("select id,tablename from mysqlgui_tables where id=?;");
 			st.setInt(1, id);
 			ResultSet rs = st.executeQuery();
 			Table table = new Table();
 			if(rs.next()) {
 				table.setId(id);
 				table.setName(rs.getString(2));
-				st = sqlConnection.prepareStatement("select fieldname,fieldtype,constraints from table_fields where table_id=?");
+				st = sqlConnection.prepareStatement("select fieldname,fieldtype,constraints from mysqlgui_table_fields where table_id=?");
 				st.setInt(1, id);
 				ResultSet rs2 = st.executeQuery();
 				ArrayList<Field> fields = new ArrayList<Field>();

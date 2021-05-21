@@ -14,7 +14,7 @@ public class UserCrud {
 	
 	public User authenticateUser(String username, String password){
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("select * from user where username = ? and password = ?");
+			PreparedStatement st = sqlConnection.prepareStatement("select * from mysqlgui_users where username = ? and password = ?");
 			st.setString(1, username);
 			st.setString(2, password);
 			ResultSet rs = st.executeQuery();
@@ -29,5 +29,15 @@ public class UserCrud {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	public void create(String username, String password) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_users(username, password) values(?,?);");
+			st.setString(1, username);
+			st.setString(2, password);
+			st.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }

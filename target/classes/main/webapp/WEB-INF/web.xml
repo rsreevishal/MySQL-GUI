@@ -70,6 +70,12 @@
   	<description></description>
   	<servlet-class>controller.table.UpdateTableRecord</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>SignUp</servlet-name>
+  	<display-name>SignUp</display-name>
+  	<description></description>
+  	<servlet-class>controller.SignUp</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>Index</servlet-name>
   	<url-pattern>/</url-pattern>
@@ -113,5 +119,9 @@
   <servlet-mapping>
   	<servlet-name>UpdateTableRecord</servlet-name>
   	<url-pattern>/UpdateTableRecord</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>SignUp</servlet-name>
+  	<url-pattern>/SignUp</url-pattern>
   </servlet-mapping>
 </web-app>
