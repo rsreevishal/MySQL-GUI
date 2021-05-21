@@ -4,7 +4,12 @@ public class TableRecordField {
 	private FieldType fieldType;
 	private String fieldName;
 	private String fieldValue;
-	
+	public TableRecordField() {}
+	public TableRecordField(FieldType fieldType, String fieldName, String fieldValue) {
+		this.fieldType = fieldType;
+		this.fieldName = fieldName;
+		this.fieldValue = fieldValue;
+	}
 	public FieldType getFieldType() {
 		return fieldType;
 	}

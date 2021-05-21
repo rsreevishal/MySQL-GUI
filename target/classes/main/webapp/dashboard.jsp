@@ -28,23 +28,13 @@
 		<h2>DDL Queries</h2>
 			<ol>
 				<li>
-					<form action="" method="get">
-						<button type="submit">View record</button>
+					<form action="/mysqlgui/ViewAllTableRecord" method="get">
+						<button type="submit">Show/Update/Delete record</button>
 					</form>
 				</li>
 				<li>
 					<form action="/mysqlgui/InsertTableRecord" method="get">
-						<button type="submit">Insert record</button>
-					</form>
-				</li>
-				<li>
-					<form action="" method="get">
-						<button type="submit">Update record</button>
-					</form>
-				</li>
-				<li>
-					<form action="" method="get">
-						<button type="submit">Delete record</button>
+						<button type="submit">Create record</button>
 					</form>
 				</li>
 			</ol>

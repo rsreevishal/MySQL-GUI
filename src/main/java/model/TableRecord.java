@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 
 public class TableRecord {
+	private PrimaryKey key;
 	private String tablename;
 	private ArrayList<TableRecordField> fields;
 	
@@ -17,5 +18,11 @@ public class TableRecord {
 	}
 	public void setFields(ArrayList<TableRecordField> fields) {
 		this.fields = fields;
+	}
+	public PrimaryKey getKey() {
+		return key;
+	}
+	public void setKey(PrimaryKey key) {
+		this.key = key;
 	}
 }
