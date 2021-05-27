@@ -115,4 +115,39 @@ public class TableCrud {
 		}
 		return null;
 	}
+	
+	public Table get(String tableName) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("select id,tablename from mysqlgui_tables where tablename=?;");
+			st.setString(1, tableName);
+			ResultSet rs = st.executeQuery();
+			Table table = new Table();
+			if(rs.next()) {
+				int pk = rs.getInt(1);
+				table.setId(pk);
+				table.setName(rs.getString(2));
+				st = sqlConnection.prepareStatement("select fieldname,fieldtype,constraints from mysqlgui_table_fields where table_id=?");
+				st.setInt(1, pk);
+				ResultSet rs2 = st.executeQuery();
+				ArrayList<Field> fields = new ArrayList<Field>();
+				while(rs2.next()) {
+					Field field = new Field();
+					field.setName(rs2.getString(1));
+					field.setFieldType(FieldType.valueOf(rs2.getString(2)));
+					String[] constrts = rs2.getString(3).split(",");
+					ArrayList<FieldConstraint> constraints = new ArrayList<FieldConstraint>();
+					for(String s: constrts) {
+						constraints.add(FieldConstraint.valueOf(s));
+					}
+					field.setFieldConstraint(constraints);
+					fields.add(field);
+				}
+				table.setFields(fields);
+			}
+			return table;
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

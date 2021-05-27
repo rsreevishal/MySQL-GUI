@@ -76,6 +76,12 @@
   	<description></description>
   	<servlet-class>controller.SignUp</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>Crudql</servlet-name>
+  	<display-name>Crudql</display-name>
+  	<description></description>
+  	<servlet-class>controller.crudql.Crudql</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>Index</servlet-name>
   	<url-pattern>/</url-pattern>
@@ -123,5 +129,9 @@
   <servlet-mapping>
   	<servlet-name>SignUp</servlet-name>
   	<url-pattern>/SignUp</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>Crudql</servlet-name>
+  	<url-pattern>/Crudql</url-pattern>
   </servlet-mapping>
 </web-app>

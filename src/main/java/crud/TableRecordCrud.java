@@ -44,6 +44,7 @@ public class TableRecordCrud {
 		String query = String.format("INSERT INTO %s(%s) values(%s)", record.getTablename(),
 				fields.toString().substring(0, fields.length() - 1),
 				values.toString().substring(0, values.length() - 1));
+		System.out.println("Create Query: " + query);
 		try {
 			PreparedStatement st = sqlConnection.prepareStatement(query);
 			st.executeUpdate();
@@ -116,6 +117,41 @@ public class TableRecordCrud {
 		return result;
 	}
 	
+	public TableRecord get(Table table, PrimaryKey key) {
+		TableRecord result = new TableRecord();
+		StringBuilder fields = new StringBuilder("");
+		for (Field field : table.getFields()) {
+			fields.append(field.getName()).append(",");
+		}
+		System.out.println(fields.toString());
+		String query = String.format("SELECT %s FROM %s where %s=%s;", fields.toString().substring(0, fields.length() - 1),
+				table.getName(), key.getKey(), key.getValue());
+		System.out.println(query);
+		try {
+			PreparedStatement statement = sqlConnection.prepareStatement(query);
+			ResultSet resultSet = statement.executeQuery();
+			if (resultSet.next()) {
+				TableRecord tableRecord = new TableRecord();
+				tableRecord.setTablename(table.getName());
+				ArrayList<TableRecordField> tableRecordFields = new ArrayList<TableRecordField>();
+				for (int fi = 0; fi < table.getFields().size(); fi++) {
+					Field field = table.getFields().get(fi);
+					if (field.getFieldConstraint().contains(FieldConstraint.PRIMARY_KEY)) {
+						tableRecord.setKey(new PrimaryKey(field.getName(), resultSet.getString(fi + 1)));;
+					}
+					TableRecordField trf = new TableRecordField(field.getFieldType(), field.getName(),
+							resultSet.getString(fi + 1));
+					tableRecordFields.add(trf);
+					
+				}
+				tableRecord.setFields(tableRecordFields);
+				result = tableRecord;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	public void delete(String tablename, PrimaryKey key) {
 		try {
 			String query = String.format("DELETE FROM %s WHERE %s = %s", tablename, key.getKey(), key.getValue());

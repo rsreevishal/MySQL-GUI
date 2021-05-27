@@ -2,6 +2,7 @@ package model;
 
 public class PrimaryKey {
 	private String key, value;
+	public PrimaryKey() {}
 	public PrimaryKey(String key, String value) {
 		this.setKey(key);
 		this.setValue(value);
