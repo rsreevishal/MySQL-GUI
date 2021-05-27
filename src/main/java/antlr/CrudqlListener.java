@@ -1,4 +1,4 @@
-// Generated from Crudql.g4 by ANTLR 4.9.2
+// Generated from antlr/Crudql.g4 by ANTLR 4.9.2
 
 	package antlr;
 
@@ -69,6 +69,36 @@ public interface CrudqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitViewAll(CrudqlParser.ViewAllContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CrudqlParser#colView}.
+	 * @param ctx the parse tree
+	 */
+	void enterColView(CrudqlParser.ColViewContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CrudqlParser#colView}.
+	 * @param ctx the parse tree
+	 */
+	void exitColView(CrudqlParser.ColViewContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CrudqlParser#colViewAll}.
+	 * @param ctx the parse tree
+	 */
+	void enterColViewAll(CrudqlParser.ColViewAllContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CrudqlParser#colViewAll}.
+	 * @param ctx the parse tree
+	 */
+	void exitColViewAll(CrudqlParser.ColViewAllContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CrudqlParser#storeColView}.
+	 * @param ctx the parse tree
+	 */
+	void enterStoreColView(CrudqlParser.StoreColViewContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CrudqlParser#storeColView}.
+	 * @param ctx the parse tree
+	 */
+	void exitStoreColView(CrudqlParser.StoreColViewContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CrudqlParser#expr}.
 	 * @param ctx the parse tree

@@ -1,4 +1,4 @@
-// Generated from Crudql.g4 by ANTLR 4.9.2
+// Generated from antlr/Crudql.g4 by ANTLR 4.9.2
 
 	package antlr;
 
@@ -85,6 +85,42 @@ public class CrudqlBaseListener implements CrudqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	 public void exitViewAll(CrudqlParser.ViewAllContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void enterColView(CrudqlParser.ColViewContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void exitColView(CrudqlParser.ColViewContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void enterColViewAll(CrudqlParser.ColViewAllContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void exitColViewAll(CrudqlParser.ColViewAllContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void enterStoreColView(CrudqlParser.StoreColViewContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void exitStoreColView(CrudqlParser.StoreColViewContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,4 +1,4 @@
-// Generated from Crudql.g4 by ANTLR 4.9.2
+// Generated from antlr/Crudql.g4 by ANTLR 4.9.2
 
 	package antlr;
 
@@ -48,6 +48,24 @@ public interface CrudqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitViewAll(CrudqlParser.ViewAllContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CrudqlParser#colView}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitColView(CrudqlParser.ColViewContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CrudqlParser#colViewAll}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitColViewAll(CrudqlParser.ColViewAllContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CrudqlParser#storeColView}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStoreColView(CrudqlParser.StoreColViewContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CrudqlParser#expr}.
 	 * @param ctx the parse tree

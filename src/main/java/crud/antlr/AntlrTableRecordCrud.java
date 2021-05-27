@@ -1,13 +1,12 @@
 package crud.antlr;
-
-import java.sql.Connection;
 import java.util.ArrayList;
-
-import core.DBConnector;
 import crud.TableCrud;
 import crud.TableRecordCrud;
 import expression.AddExpr;
+import expression.ColViewAllExpr;
+import expression.ColViewExpr;
 import expression.DeleteExpr;
+import expression.StoreColViewExpr;
 import expression.UpdateExpr;
 import expression.ViewAllExpr;
 import expression.ViewExpr;
@@ -19,14 +18,10 @@ import model.TableRecord;
 import model.TableRecordField;
 
 public class AntlrTableRecordCrud {
-	private DBConnector dbConnector;
-	private Connection sqlConnection;
 	private TableCrud tableCrud;
 	private TableRecordCrud tableRecordCrud;
 
 	public AntlrTableRecordCrud() {
-		dbConnector = DBConnector.getInstance();
-		sqlConnection = dbConnector.getSqlConnection();
 		tableCrud = new TableCrud();
 		tableRecordCrud = new TableRecordCrud();
 	}
@@ -128,6 +123,27 @@ public class AntlrTableRecordCrud {
 		return "<p style='color: red;'>No records<p>";
 	}
 	
+	public String viewAll(ColViewAllExpr expr) {
+		Table table = tableCrud.get(expr.idToken.id);
+		ArrayList<TableRecord> records = tableRecordCrud.getAll(table, expr.colToken.id);
+		if(records.size() > 0) {
+			String heading = "", values = "";
+			for(TableRecordField trf: records.get(0).getFields()) {
+				heading += String.format("<th scope='cols'>%s</th>", trf.getFieldName());
+			}
+			for(TableRecord record: records) {
+				String row = "";
+				for(TableRecordField trf: record.getFields()) {
+					row += String.format("<td>%s</td>", trf.getFieldValue());
+				}
+				values += String.format("<tr>%s</tr>", row);
+			}
+			String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
+			return tableStr;
+		}
+		return "<p style='color: red;'>No records<p>";
+	}
+	
 	public String view(ViewExpr expr) {
 		Table table = tableCrud.get(expr.idToken.id);
 		String pKey;
@@ -153,5 +169,48 @@ public class AntlrTableRecordCrud {
 		
 		String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
 		return tableStr;
+	}
+	
+	public String view(ColViewExpr expr) {
+		Table table = tableCrud.get(expr.idToken.id);
+		String pKey;
+		PrimaryKey pk = new PrimaryKey();
+		for(Field f: table.getFields()) {
+			if(f.getFieldConstraint().contains(FieldConstraint.PRIMARY_KEY)) {
+				pKey = f.getName();
+				pk.setKey(pKey);
+				pk.setValue(expr.uidToken.uid+"");
+				break;
+			}
+		}
+		TableRecord record = tableRecordCrud.get(table, pk, expr.colToken.id);
+		String heading = "", values = "";
+		for(TableRecordField trf: record.getFields()) {
+			heading += String.format("<th scope='cols'>%s</th>", trf.getFieldName());
+		}
+		String row = "";
+		for(TableRecordField trf: record.getFields()) {
+			row += String.format("<td>%s</td>", trf.getFieldValue());
+		}
+		values += String.format("<tr>%s</tr>", row);
+		
+		String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
+		return tableStr;
+	}
+	
+	public String getValue(StoreColViewExpr expr) {
+		Table table = tableCrud.get(expr.colViewExpr.idToken.id);
+		String pKey;
+		PrimaryKey pk = new PrimaryKey();
+		for(Field f: table.getFields()) {
+			if(f.getFieldConstraint().contains(FieldConstraint.PRIMARY_KEY)) {
+				pKey = f.getName();
+				pk.setKey(pKey);
+				pk.setValue(expr.colViewExpr.uidToken.uid+"");
+				break;
+			}
+		}
+		TableRecord record = tableRecordCrud.get(table, pk, expr.colViewExpr.colToken.id);
+		return record.getFields().get(0).getFieldValue();
 	}
 }

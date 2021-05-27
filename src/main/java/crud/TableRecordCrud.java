@@ -117,6 +117,39 @@ public class TableRecordCrud {
 		return result;
 	}
 	
+	public ArrayList<TableRecord> getAll(Table table, String colName) {
+		ArrayList<TableRecord> result = new ArrayList<TableRecord>();
+		String query = String.format("SELECT %s FROM %s;", colName,
+				table.getName());
+		System.out.println(query);
+		try {
+			PreparedStatement statement = sqlConnection.prepareStatement(query);
+			ResultSet resultSet = statement.executeQuery();
+			while (resultSet.next()) {
+				TableRecord tableRecord = new TableRecord();
+				tableRecord.setTablename(table.getName());
+				ArrayList<TableRecordField> tableRecordFields = new ArrayList<TableRecordField>();
+				for (int fi = 0; fi < table.getFields().size(); fi++) {
+					Field field = table.getFields().get(fi);
+					if (field.getFieldConstraint().contains(FieldConstraint.PRIMARY_KEY)) {
+						tableRecord.setKey(new PrimaryKey(field.getName(), resultSet.getString(fi + 1)));;
+					}
+					if(field.getName().equals(colName)) {
+						TableRecordField trf = new TableRecordField(field.getFieldType(), field.getName(),
+								resultSet.getString(1));
+						tableRecordFields.add(trf);
+						break;
+					}
+				}
+				tableRecord.setFields(tableRecordFields);
+				result.add(tableRecord);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	public TableRecord get(Table table, PrimaryKey key) {
 		TableRecord result = new TableRecord();
 		StringBuilder fields = new StringBuilder("");
@@ -152,6 +185,39 @@ public class TableRecordCrud {
 		}
 		return result;
 	}
+	
+	public TableRecord get(Table table, PrimaryKey key, String colName) {
+		TableRecord result = new TableRecord();
+		String query = String.format("SELECT %s FROM %s where %s=%s;", colName, table.getName(), key.getKey(), key.getValue());
+		System.out.println(query);
+		try {
+			PreparedStatement statement = sqlConnection.prepareStatement(query);
+			ResultSet resultSet = statement.executeQuery();
+			if (resultSet.next()) {
+				TableRecord tableRecord = new TableRecord();
+				tableRecord.setTablename(table.getName());
+				ArrayList<TableRecordField> tableRecordFields = new ArrayList<TableRecordField>();
+				for (int fi = 0; fi < table.getFields().size(); fi++) {
+					Field field = table.getFields().get(fi);
+					if (field.getFieldConstraint().contains(FieldConstraint.PRIMARY_KEY)) {
+						tableRecord.setKey(new PrimaryKey(field.getName(), resultSet.getString(fi + 1)));;
+					}
+					if(field.getName().equals(colName)) {
+						TableRecordField trf = new TableRecordField(field.getFieldType(), field.getName(),
+								resultSet.getString(1));
+						tableRecordFields.add(trf);
+						break;
+					}
+				}
+				tableRecord.setFields(tableRecordFields);
+				result = tableRecord;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	public void delete(String tablename, PrimaryKey key) {
 		try {
 			String query = String.format("DELETE FROM %s WHERE %s = %s", tablename, key.getKey(), key.getValue());
