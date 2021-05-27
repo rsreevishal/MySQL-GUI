@@ -5,6 +5,10 @@
     tablename + ('val1','val2', ...)    | To add data in the table
     tablename ^ (id,'val1','val2', ...) | To update data with primary key(id) in the table
     tablename - id                      | To delete data with primary key(id) in the table
+    tablename.colname =                 | To view all colname data in the table
+    tablename.colname = 1               | To view colname data with primary key(id) in the table
+    $var = (tablename.colname = 1)      | To store the value of returned data
+    table += ('$var','val1'...)         | To add stored data
 */
 
 grammar Crudql;
@@ -30,7 +34,7 @@ colView: ID '.' ID '=' UID ;
 
 colViewAll: ID '.' ID '=' ;
 
-storeColView: VAR '=' colView ;
+storeColView: VAR '=' '(' colView ')';
        
 expr: add | update | delete | view | viewAll | colView | colViewAll | storeColView;
 
@@ -44,7 +48,7 @@ ID: [a-z][a-zA-Z0-9_]* ;
 
 VAR: '$'[a-z][a-zA-Z0-9_]*;
 
-TEXT: '\'' ~('\r' | '\n')+ '\'' ;
+TEXT: '\'' ~('\r' | '\n')+ '\'';
 
 UID: [0-9]+ ;
 

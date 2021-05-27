@@ -1,5 +1,8 @@
-table1 + ('1','vishal','rsreevishal@gmail.com')
 table1 ^ (1,'sreevishal')
 table1 - 1
 table1 = 1
 table1 =
+table1.name =
+table1.name = 1
+$a = (table1.name = 1)
+table1 + ('1','$a','test')

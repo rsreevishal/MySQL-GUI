@@ -29,20 +29,24 @@
 			<a href="/mysqlgui/Dashboard" class="btn btn-primary" role="button">Back</a>
 			<hr class="my-4">
 			<p class="lead">
-			<button class="btn btn-info" type="button" data-toggle="collapse" data-target="#syntaxList" aria-expanded="false" aria-controls="syntaxList">Syntax</button>
-			<ol class="list-group" id="syntaxList">
+			<button class="btn btn-info" type="button" onClick="showSyntax()">Syntax</button>
+			<ol class="list-group" style="display:none;" id="syntaxList" >
 				<li class="list-group-item"><span style="color: #4287f5;">tablename = </span> To view all data in the table</li>
 				<li class="list-group-item"><span style="color: #4287f5;">tablename = id</span> To view data with primary key(id) in the table</li>
 				<li class="list-group-item"><span style="color: #4287f5;">tablename + ('val1','val2', ...) </span> To add data in the table</li>
 				<li class="list-group-item"><span style="color: #4287f5;">tablename ^ (id,'val1','val2', ...) </span> To update data with primary key(id) in the table</li>
 				<li class="list-group-item"><span style="color: #4287f5;">tablename - id</span> To delete data with primary key(id) in the table</li>
+				<li class="list-group-item"><span style="color: #4287f5;">tablename.colname = </span> To view all colname data in the table</li>
+				<li class="list-group-item"><span style="color: #4287f5;">tablename.colname = 1 </span> To view colname data with primary key(id) in the table</li>
+				<li class="list-group-item"><span style="color: #4287f5;">$var = (tablename.colname = 1) </span> To store the value of returned data</li>
+				<li class="list-group-item"><span style="color: #4287f5;">table += ('$var','val1'...) </span> To add stored data</li>
 			</ol>
 			</p>
 		</div>
 	<form class="form" action="/mysqlgui/Crudql" method="post">
 		<div class="form-group">
 			<label for="query">Query</label>
-			<input class="form-control" type="text" name="query" id="query" required/>
+			<textarea class="form-control" placeholder="Separate each query by new line" name="query" id="query" required></textarea>
 		</div>
 		<button type="submit" class="btn btn-success">Execute</button>
 	</form>
@@ -58,4 +62,15 @@
 
 </div>
 </body>
+<script>
+	function showSyntax() {
+		var curD = $("#syntaxList").css("display");
+		if(curD === "none") {
+			$("#syntaxList").css("display", "block");
+		}
+		if(curD === "block") {
+			$("#syntaxList").css("display", "none");
+		}
+	}
+</script>
 </html>
