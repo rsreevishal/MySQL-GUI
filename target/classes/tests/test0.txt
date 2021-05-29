@@ -1,3 +1,7 @@
+CREATE FORM employee [
+	Name TEXT ('5','50')
+	Email TEXT ('10','50')
+]
 table1 ^ (1,'sreevishal')
 table1 - 1
 table1 = 1

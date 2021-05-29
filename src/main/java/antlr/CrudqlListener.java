@@ -100,6 +100,36 @@ public interface CrudqlListener extends ParseTreeListener {
 	 */
 	void exitStoreColView(CrudqlParser.StoreColViewContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CrudqlParser#createForm}.
+	 * @param ctx the parse tree
+	 */
+	void enterCreateForm(CrudqlParser.CreateFormContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CrudqlParser#createForm}.
+	 * @param ctx the parse tree
+	 */
+	void exitCreateForm(CrudqlParser.CreateFormContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CrudqlParser#formInput}.
+	 * @param ctx the parse tree
+	 */
+	void enterFormInput(CrudqlParser.FormInputContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CrudqlParser#formInput}.
+	 * @param ctx the parse tree
+	 */
+	void exitFormInput(CrudqlParser.FormInputContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CrudqlParser#inputType}.
+	 * @param ctx the parse tree
+	 */
+	void enterInputType(CrudqlParser.InputTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CrudqlParser#inputType}.
+	 * @param ctx the parse tree
+	 */
+	void exitInputType(CrudqlParser.InputTypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CrudqlParser#expr}.
 	 * @param ctx the parse tree
 	 */

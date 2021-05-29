@@ -33,10 +33,15 @@ public class CrudqlProcessor {
 				int counter = 0;
 				for(Expression e: prog.expressions) {
 					counter += 1;
+					if(e instanceof FormExpr) {
+						result += String.format("<li class='list-group-item tab1'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
+					} else {
+						result += String.format("<li class='list-group-item tab3'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
+					}
+					
 					if(e instanceof AddExpr) {
 						
 						System.out.println("Adding values");
-						result += String.format("<li class='list-group-item'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
 						AddExpr expr = (AddExpr)e;
 						for(int i=0; i<expr.listToken.values.size(); i++) {
 							String val = expr.listToken.values.get(i);
@@ -51,53 +56,53 @@ public class CrudqlProcessor {
 					} else if (e instanceof UpdateExpr) {
 						
 						System.out.println("Updating values");
-						result += String.format("<li class='list-group-item'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
 						String output = antlrRecordCrud.update((UpdateExpr)e);
 						result += String.format("<div id='%s'>%s</div>", "result_" + counter, output);
 						
 					} else if (e instanceof DeleteExpr) {
 						
 						System.out.println("Deleting values");
-						result += String.format("<li class='list-group-item'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
 						String output = antlrRecordCrud.delete((DeleteExpr)e);
 						result += String.format("<div id='%s'>%s</div>", "result_" + counter, output);
 						
 					} else if (e instanceof ViewExpr) {
 						
 						System.out.println("Viewing value");
-						result += String.format("<li class='list-group-item'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
 						String output = antlrRecordCrud.view((ViewExpr)e);
 						result += String.format("<div id='%s'>%s</div>", "result_" + counter, output);
 						
 					} else if (e instanceof ViewAllExpr) {
 						
 						System.out.println("Viewing all values");
-						result += String.format("<li class='list-group-item'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
 						String output = antlrRecordCrud.viewAll((ViewAllExpr)e);
 						result += String.format("<div class='collapse' id='%s'>%s</div>", "result_" + counter, output);
 						
 					} else if (e instanceof ColViewExpr) {
 						
 						System.out.println("Viewing column value");
-						result += String.format("<li class='list-group-item'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
 						String output = antlrRecordCrud.view((ColViewExpr)e);
 						result += String.format("<div id='%s'>%s</div>", "result_" + counter, output);
 						
 					} else if (e instanceof ColViewAllExpr) {
 						
 						System.out.println("Viewing all column values");
-						result += String.format("<li class='list-group-item'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
 						String output = antlrRecordCrud.viewAll((ColViewAllExpr)e);
 						result += String.format("<div class='collapse' id='%s'>%s</div>", "result_" + counter, output);
 						
 					} else if (e instanceof StoreColViewExpr) {
 						
+						System.out.println("Storing column value");
 						StoreColViewExpr expr = (StoreColViewExpr)e;
 						String value = antlrRecordCrud.getValue(expr);
 						progVisitor.vars.replace(expr.varToken.var, value);
-						System.out.println("Storing column value");
-						result += String.format("<li class='list-group-item'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
 						String output = "<p style='color: green;'>Value stored</p>";
+						result += String.format("<div id='%s'>%s</div>", "result_" + counter, output);
+						
+					} else if(e instanceof FormExpr) {
+						
+						System.out.println("Creating form");
+						FormExpr expr = (FormExpr)e;
+						String output = antlrRecordCrud.createFormTable(expr);
 						result += String.format("<div id='%s'>%s</div>", "result_" + counter, output);
 						
 					}

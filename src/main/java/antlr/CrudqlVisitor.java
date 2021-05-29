@@ -67,6 +67,24 @@ public interface CrudqlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStoreColView(CrudqlParser.StoreColViewContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CrudqlParser#createForm}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCreateForm(CrudqlParser.CreateFormContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CrudqlParser#formInput}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFormInput(CrudqlParser.FormInputContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CrudqlParser#inputType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInputType(CrudqlParser.InputTypeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CrudqlParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

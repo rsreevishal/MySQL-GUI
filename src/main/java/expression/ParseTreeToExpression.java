@@ -7,7 +7,9 @@ import antlr.CrudqlBaseVisitor;
 import antlr.CrudqlParser.AddContext;
 import antlr.CrudqlParser.ColViewAllContext;
 import antlr.CrudqlParser.ColViewContext;
+import antlr.CrudqlParser.CreateFormContext;
 import antlr.CrudqlParser.DeleteContext;
+import antlr.CrudqlParser.FormInputContext;
 import antlr.CrudqlParser.StoreColViewContext;
 import antlr.CrudqlParser.UpdateContext;
 import antlr.CrudqlParser.ViewAllContext;
@@ -16,51 +18,88 @@ import model.Field;
 import model.Table;
 
 public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
+	
+	@Override
+	public Expression visitCreateForm(CreateFormContext ctx) {
+		IdToken idToken = new IdToken(ctx.ID().getText());
+		Table table = containTable(idToken);
+		if (table != null) {
+			semanticErrors.add(String
+					.format("<p><span style='color:red;'>%s</span> already exists in the database!</p>", idToken.id));
+		}
+		ArrayList<FormInputExpr> formInputs = new ArrayList<FormInputExpr>();
+		for(FormInputContext fictx: ctx.formInput()) {
+			IdToken fIdToken = new IdToken(fictx.ID().getText());
+			String argStr = fictx.LIST().getText();
+			String[] argsStr = argStr.substring(1, argStr.length() - 1).split(",");
+			ArrayList<String> args = new ArrayList<String>();
+			for(String arg: argsStr) {
+				args.add(arg.substring(1, arg.length() - 1));
+			}
+			InputType inputType = InputType.valueOf(fictx.inputType().getText());
+			FormInputExpr formInput = new FormInputExpr(fIdToken, inputType, args);
+			formInputs.add(formInput);
+		}	
+		return new FormExpr(idToken, formInputs);
+	}
+
 	@Override
 	public Expression visitColView(ColViewContext ctx) {
 		IdToken idToken = new IdToken(ctx.ID().get(0).getText());
 		IdToken colToken = new IdToken(ctx.ID().get(1).getText());
 		UidToken uidToken = new UidToken(Integer.parseInt(ctx.UID().getText()));
 		Table table = containTable(idToken);
-		if(table == null) {
-			semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
+		if (table == null) {
+			semanticErrors.add(String
+					.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
 		} else {
-			if(!containColumn(table, colToken)) {
-				semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in table %s!</p>", colToken.id, table.getName()));
+			if (!containColumn(table, colToken)) {
+				semanticErrors
+						.add(String.format("<p><span style='color:red;'>%s</span> does not contain in table %s!</p>",
+								colToken.id, table.getName()));
 			}
 		}
 		return new ColViewExpr(idToken, colToken, uidToken);
 	}
+
 	@Override
 	public Expression visitColViewAll(ColViewAllContext ctx) {
 		IdToken idToken = new IdToken(ctx.ID().get(0).getText());
 		IdToken colToken = new IdToken(ctx.ID().get(1).getText());
 		Table table = containTable(idToken);
-		if(table == null) {
-			semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
+		if (table == null) {
+			semanticErrors.add(String
+					.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
 		} else {
-			if(!containColumn(table, colToken)) {
-				semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in table %s!</p>", colToken.id, table.getName()));
+			if (!containColumn(table, colToken)) {
+				semanticErrors
+						.add(String.format("<p><span style='color:red;'>%s</span> does not contain in table %s!</p>",
+								colToken.id, table.getName()));
 			}
 		}
-		
+
 		return new ColViewAllExpr(idToken, colToken);
 	}
+
 	@Override
 	public Expression visitStoreColView(StoreColViewContext ctx) {
 		VarToken varToken = new VarToken(ctx.VAR().getText());
 		IdToken idToken = new IdToken(ctx.colView().ID().get(0).getText());
 		IdToken colToken = new IdToken(ctx.colView().ID().get(1).getText());
 		Table table = containTable(idToken);
-		if(table == null) {
-			semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
+		if (table == null) {
+			semanticErrors.add(String
+					.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
 		} else {
-			if(!containColumn(table, colToken)) {
-				semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in table %s!</p>", colToken.id, table.getName()));
+			if (!containColumn(table, colToken)) {
+				semanticErrors
+						.add(String.format("<p><span style='color:red;'>%s</span> does not contain in table %s!</p>",
+								colToken.id, table.getName()));
 			}
 		}
-		if(this.vars.containsKey(varToken.var)) {
-			semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> already declared!</p>", varToken.var));
+		if (this.vars.containsKey(varToken.var)) {
+			semanticErrors
+					.add(String.format("<p><span style='color:red;'>%s</span> already declared!</p>", varToken.var));
 		} else {
 			System.out.println("Token to be stored: " + varToken.var);
 			this.vars.put(varToken.var, "");
@@ -73,24 +112,28 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 	public ArrayList<String> semanticErrors;
 	public HashMap<String, String> vars;
 	private ArrayList<Table> tables;
-	public ParseTreeToExpression(ArrayList<String> semanticErrors, HashMap<String, String> vars, ArrayList<Table> tables) {
+
+	public ParseTreeToExpression(ArrayList<String> semanticErrors, HashMap<String, String> vars,
+			ArrayList<Table> tables) {
 		this.semanticErrors = semanticErrors;
 		this.tables = tables;
 		this.vars = vars;
 	}
+
 	private Table containTable(IdToken idToken) {
-		for(Table t: tables) {
-			if(t.getName().equals(idToken.id)) {
+		for (Table t : tables) {
+			if (t.getName().equals(idToken.id)) {
 				return t;
 			}
 		}
 		return null;
 	}
+
 	private boolean containColumn(Table table, IdToken col) {
-		for(Table t: tables) {
-			if(t.getId() == table.getId()) {
-				for(Field f: t.getFields()) {
-					if(f.getName().equals(col.id)) {
+		for (Table t : tables) {
+			if (t.getId() == table.getId()) {
+				for (Field f : t.getFields()) {
+					if (f.getName().equals(col.id)) {
 						return true;
 					}
 				}
@@ -98,23 +141,26 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 		}
 		return false;
 	}
+
 	@Override
 	public Expression visitAdd(AddContext ctx) {
 		IdToken idToken = new IdToken(ctx.ID().getText());
-		if(containTable(idToken) == null) {
-			semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
+		if (containTable(idToken) == null) {
+			semanticErrors.add(String
+					.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
 		}
 		ArrayList<String> values = new ArrayList<String>();
 		String valuesStr = ctx.LIST().getText();
-		String contentStr = valuesStr.substring(valuesStr.indexOf("(")+1, valuesStr.indexOf(")"));
+		String contentStr = valuesStr.substring(valuesStr.indexOf("(") + 1, valuesStr.indexOf(")"));
 		String[] content = contentStr.split(",");
-		for(String val: content) {
-			String valContent = val.substring(1, val.length()-1);
+		for (String val : content) {
+			String valContent = val.substring(1, val.length() - 1);
 			System.out.println("Insert Field: " + valContent);
-			if(valContent.charAt(0) == '$' && !this.vars.containsKey(valContent)) {
-				semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> haven't declared!</p>", valContent));
+			if (valContent.charAt(0) == '$' && !this.vars.containsKey(valContent)) {
+				semanticErrors
+						.add(String.format("<p><span style='color:red;'>%s</span> haven't declared!</p>", valContent));
 			} else {
-				values.add(val);	
+				values.add(val);
 			}
 		}
 		ListToken listToken = new ListToken(values);
@@ -124,24 +170,26 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 	@Override
 	public Expression visitUpdate(UpdateContext ctx) {
 		IdToken idToken = new IdToken(ctx.ID().getText());
-		if(containTable(idToken) == null) {
-			semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
+		if (containTable(idToken) == null) {
+			semanticErrors.add(String
+					.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
 		}
 		ArrayList<String> values = new ArrayList<String>();
 		String valuesStr = ctx.ULIST().getText();
-		String contentStr = valuesStr.substring(valuesStr.indexOf("(")+1, valuesStr.indexOf(")"));
+		String contentStr = valuesStr.substring(valuesStr.indexOf("(") + 1, valuesStr.indexOf(")"));
 		String[] content = contentStr.split(",");
 		int uid = Integer.parseInt(content[0]);
 		UidToken uidToken = new UidToken(uid);
-		for(int i=1; i<content.length; i++) {
+		for (int i = 1; i < content.length; i++) {
 			String val = content[i];
-			String valContent = val.substring(1, val.length()-1);
-			if(val.charAt(1) == '$' && !this.vars.containsKey(valContent)) {
-				semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> haven't declared!</p>", valContent));
-			} else if(this.vars.containsKey(valContent)) {
+			String valContent = val.substring(1, val.length() - 1);
+			if (val.charAt(1) == '$' && !this.vars.containsKey(valContent)) {
+				semanticErrors
+						.add(String.format("<p><span style='color:red;'>%s</span> haven't declared!</p>", valContent));
+			} else if (this.vars.containsKey(valContent)) {
 				values.add("'" + this.vars.get(valContent) + "'");
 			} else {
-				values.add(val);	
+				values.add(val);
 			}
 		}
 		UListToken uListToken = new UListToken(uidToken, values);
@@ -151,8 +199,9 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 	@Override
 	public Expression visitDelete(DeleteContext ctx) {
 		IdToken idToken = new IdToken(ctx.ID().getText());
-		if(containTable(idToken) == null) {
-			semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
+		if (containTable(idToken) == null) {
+			semanticErrors.add(String
+					.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
 		}
 		int uid = Integer.parseInt(ctx.UID().getText());
 		UidToken uidToken = new UidToken(uid);
@@ -162,8 +211,9 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 	@Override
 	public Expression visitView(ViewContext ctx) {
 		IdToken idToken = new IdToken(ctx.ID().getText());
-		if(containTable(idToken) == null) {
-			semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
+		if (containTable(idToken) == null) {
+			semanticErrors.add(String
+					.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
 		}
 		int uid = Integer.parseInt(ctx.UID().getText());
 		UidToken uidToken = new UidToken(uid);
@@ -173,8 +223,9 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 	@Override
 	public Expression visitViewAll(ViewAllContext ctx) {
 		IdToken idToken = new IdToken(ctx.ID().getText());
-		if(containTable(idToken) == null) {
-			semanticErrors.add(String.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
+		if (containTable(idToken) == null) {
+			semanticErrors.add(String
+					.format("<p><span style='color:red;'>%s</span> does not contain in the database!</p>", idToken.id));
 		}
 		return new ViewAllExpr(idToken);
 	}

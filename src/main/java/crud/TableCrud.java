@@ -55,7 +55,29 @@ public class TableCrud {
 		}
 		return null;
 	}
-	
+	public void createForm(int table_id, String form) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_table_forms(table_id, form) values(?, ?);");
+			st.setInt(1, table_id);
+			st.setString(2, form);
+			st.executeUpdate();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public String getLastForm() {
+		String result="<p style='color:red;'>No form found create one to view here..</p>";
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("select form from mysqlgui_table_forms order by id desc limit 1;");
+			ResultSet rs = st.executeQuery();
+			if(rs.next()) {
+				result = rs.getString(1);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return result;	
+	}
 	public void delete(String tablename, int id) {
 		try {
 			PreparedStatement st = sqlConnection.prepareStatement("delete from mysqlgui_tables where id=?;");

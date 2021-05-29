@@ -40,7 +40,7 @@
 						<td>${table.getName()}</td>
 						<td>
 							<div id="table_${table.getId()}">
-								<form class="form-inline" action="" method="post">
+								<form class="form-inline" action="/mysqlgui/InsertTableRecord" method="post">
 									<c:forEach items="${table.getFields()}" var="field">
 										<c:if
 											test="${!field.getFieldConstraint().contains(FieldConstraint.PRIMARY_KEY)}">

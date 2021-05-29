@@ -35,8 +35,14 @@ colView: ID '.' ID '=' UID ;
 colViewAll: ID '.' ID '=' ;
 
 storeColView: VAR '=' '(' colView ')';
+
+createForm: 'CREATE FORM' ID '[' formInput+ ']';
+
+formInput: ID inputType LIST;
+
+inputType: 'TEXT' | 'NUMBER' | 'TEXTAREA' | 'RADIO' | 'CHECKBOX' | 'PASSWORD' | 'EMAIL';
        
-expr: add | update | delete | view | viewAll | colView | colViewAll | storeColView;
+expr: add | update | delete | view | viewAll | colView | colViewAll | storeColView | createForm;
 
 /* Tokens */
 
@@ -44,7 +50,7 @@ LIST: '(' TEXT (',' TEXT)* ')' ;
 
 ULIST: '(' UID (',' TEXT)* ')' ;
     
-ID: [a-z][a-zA-Z0-9_]* ;
+ID: [a-zA-Z][a-zA-Z0-9_]* ;
 
 VAR: '$'[a-z][a-zA-Z0-9_]*;
 

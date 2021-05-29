@@ -1,0 +1,4 @@
+CREATE FORM employee [
+	Name TEXT ('50')
+	Email TEXT ('50')
+]
