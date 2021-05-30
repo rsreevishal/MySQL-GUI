@@ -75,6 +75,7 @@ public class TableRecordCrud {
 		String query = String.format("UPDATE %s SET %s WHERE %s=%s;", record.getTablename(),
 				values.toString().substring(0, values.length() - 1),
 				key.getKey(), key.getValue());
+		System.out.print("Update query: " + query);
 		try {
 			PreparedStatement st = sqlConnection.prepareStatement(query);
 			st.executeUpdate();

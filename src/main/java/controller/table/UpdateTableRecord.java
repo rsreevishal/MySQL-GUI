@@ -39,7 +39,6 @@ public class UpdateTableRecord extends HttpServlet {
 		TableRecord tableRecord = new TableRecord();
 		tableRecord.setTablename(tableName);
 		tableRecord.setFields(records);
-		String tablename = request.getParameter("tablename");
 		tableRecordCrud.update(tableRecord,
 				new PrimaryKey(request.getParameter("primarykey"), request.getParameter("primaryid")));
 		request.setAttribute("tableid", Integer.parseInt(request.getParameter("tableid")));

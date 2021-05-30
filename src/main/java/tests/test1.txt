@@ -1,9 +1,22 @@
 CREATE FORM employee [
-	Name TEXT ('50')
-	Email TEXT ('50')
+	Name TEXT ('3','50')
+	Email TEXT ('5','50')
+	Salary NUMBER ('100000','1000000')
+	Position RADIO ('CEO','MANAGER','CLERK')
+	Qualification CHECKBOX ('MBA','MS','BE')
 ]
 
-CREATE VIEW report1 FOR employee [
-	Name = 'sree'
-	Salary > '5000'
+CREATE VIEW my_report_1 FOR employee [
+	Name = 'ram'
+]
+
+CREATE VIEW my_report_2 FOR employee [
+	Salary > '500000'
+	Qualification HAS 'BE'
+]
+
+CREATE VIEW my_report_3 FOR employee [
+	Salary > '500000'
+	Position = 'MANAGER'
+	Qualification HAS 'BE'
 ]

@@ -226,6 +226,13 @@ public class AntlrTableRecordCrud {
 		Table table = new Table();
 		table.setName(expr.idToken.id);
 		ArrayList<Field> fields = new ArrayList<Field>();
+		Field pk = new Field();
+		pk.setName("id");
+		pk.setFieldType(FieldType.INT);
+		ArrayList<FieldConstraint> pkConstraints = new ArrayList<FieldConstraint>();
+		pkConstraints.add(FieldConstraint.PRIMARY_KEY);
+		pk.setFieldConstraint(pkConstraints);
+		fields.add(pk);
 		for (FormInputExpr fie : expr.formInputs) {
 			Field field = new Field();
 			field.setName(fie.idToken.id);
@@ -245,9 +252,10 @@ public class AntlrTableRecordCrud {
 	public String formExprToHTMLForm(FormExpr expr, Table table) {
 		String inputs = "";
 		int cbCount = 0;
+		System.out.println(String.format("Input size: %d, Field size: %d", expr.formInputs.size(), table.getFields().size()));
 		for (int i=0; i<expr.formInputs.size(); i++) {
 			FormInputExpr fie = expr.formInputs.get(i);
-			Field field = table.getFields().get(i);
+			Field field = table.getFields().get(i+1); // skipping PRIMARY_KEY;
 			String formGroup = "";
 			formGroup += String.format("<input type='hidden' name='fieldName' value='%s'/><input type='hidden' name='fieldType' value='%s' />",
 					field.getName(), field.getFieldType().toString());

@@ -3,6 +3,7 @@ package controller.table;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,22 +32,40 @@ public class InsertTableRecord extends HttpServlet {
 		request.setAttribute("tables", tables);
 		request.getRequestDispatcher("insert_table_record.jsp").forward(request, response);
 	}
-
+	private String printList(ArrayList<String> list) {
+		String result = "";
+		for(String s: list) {
+			result += ("," + s);
+		}
+		return result.substring(1);
+	}
+	private boolean hasRadioValue(Iterator<String> list) {
+		while(list.hasNext()) {
+			if(list.next().startsWith("radio")) {
+				return true;
+			}
+		}
+		return false;
+	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String tableName = request.getParameter("tablename");
 		ArrayList<String> fieldNames = new ArrayList<String>(Arrays.asList(request.getParameterValues("fieldName")));
 		ArrayList<String> fieldTypes = new ArrayList<String>(Arrays.asList(request.getParameterValues("fieldType")));
 		ArrayList<String> fieldValue = new ArrayList<String>(Arrays.asList(request.getParameterValues("fieldValue")));
 		ArrayList<String> filteredFieldValue = new ArrayList<String>();
-		if(fieldNames.size() != fieldValue.size()) {
+		System.out.println("Before radio filter: " + printList(fieldValue));
+		if(hasRadioValue(request.getParameterNames().asIterator())) {
+			System.out.println("Has radio value");
 			int rCount = 0;
 			while(rCount < fieldNames.size()) {
 				if(request.getParameter("radio"+rCount) != null) {
+					System.out.println("Has radio value of :" + rCount);
 					fieldValue.add(rCount, request.getParameter("radio"+rCount));
 				}
 				rCount++;
 			}
 		}
+		System.out.println("After radio filter: " + printList(fieldValue));
 		int cbCount = 0, i = 0;
 		while(i<fieldValue.size()) {
 			String value = "";
@@ -64,6 +83,7 @@ public class InsertTableRecord extends HttpServlet {
 			    i++;
 			}
 		}
+		System.out.println("After check box filter: " + printList(filteredFieldValue));
 		ArrayList<TableRecordField> records = new ArrayList<TableRecordField>();
 		for(int j=0; j<fieldNames.size(); j++) {
 			TableRecordField record = new TableRecordField();

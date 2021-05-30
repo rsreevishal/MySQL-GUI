@@ -42,8 +42,7 @@
 							<div id="table_${table.getId()}">
 								<form class="form-inline" action="/mysqlgui/InsertTableRecord" method="post">
 									<c:forEach items="${table.getFields()}" var="field">
-										<c:if
-											test="${!field.getFieldConstraint().contains(FieldConstraint.PRIMARY_KEY)}">
+										<c:if test="${!field.getFieldConstraint().contains(FieldConstraint.PRIMARY_KEY)}">
 											<div class="form-group mx-2">
 												<label>${field.getName()}</label>
 												<input class="form-control-sm" type="text" name="fieldValue" required />
