@@ -29,7 +29,16 @@
 			<button class="btn btn-info" type="button" onClick="showSyntax()">Syntax</button>
 			<hr class="my-4">
 			<p class="lead">
-			<ol class="list-group" style="display: none;" id="syntaxList">
+			<ol class="list-group" style="display: none;" id="syntaxList1">
+				<li class="list-group-item"><span style="color: #4287f5;">CREATE FORM form_name [ input1, input2, ... ]</span> To create a form</li>
+				<li class="list-group-item"><span style="color: #4287f5;">input_name input_type ('arg1','arg2',...)</span> To create input for a form</li>
+				<li class="list-group-item"><span style="color: #4287f5;">TEXT,NUMBER,TEXTAREA,RADIO,CHECKBOX,PASSWORD,EMAIL </span> are valid input types</li>
+				<li class="list-group-item"><span style="color: #4287f5;">CREATE VIEW view_name FOR form_name [ condition1, condition2, ...]
+				</span> To create a view report for a form</li>
+				<li class="list-group-item"><span style="color: #4287f5;">input_name condition value</span> To create a condition</li>
+				<li class="list-group-item"><span style="color: #4287f5;">=,&gt;,&lt;,HAS</span> are valid conditions</li>
+			</ol>
+			<ol class="list-group" style="display: none;" id="syntaxList2">
 				<li class="list-group-item"><span style="color: #4287f5;">tablename
 						= </span> To view all data in the table</li>
 				<li class="list-group-item"><span style="color: #4287f5;">tablename
@@ -79,7 +88,7 @@
 							placeholder="Create and view form here and view the result in App tab.." name="query"
 							id="editor_query" required></textarea>
 					</div>
-					<input type="hidden" name="tab" value="tab1"/>
+					<input type="hidden" name="tab" value="tab2"/>
 					<button type="submit" class="btn btn-success">Execute</button>
 				</form>
 				<c:choose>
@@ -95,6 +104,14 @@
 				aria-labelledby="app-tab">
 				${form}
 				<p id="table_form_result"></p>
+				<c:choose>
+					<c:when test="${queryResult != null}">
+						${queryResult}
+					</c:when>
+					<c:otherwise>
+						<p class='text-info'>Create some reports to view here..</p>
+					</c:otherwise>
+				</c:choose>
 				</div>
 			<div class="tab-pane fade show ${ tab3 }" id="query" role="tabpanel"
 				aria-labelledby="query-tab">
@@ -126,12 +143,23 @@
 </body>
 <script>
 	function showSyntax() {
-		var curD = $("#syntaxList").css("display");
-		if (curD === "none") {
-			$("#syntaxList").css("display", "block");
+		if($("#editor-tab").hasClass("active") || $("#app-tab").hasClass("active")) {
+			var curD = $("#syntaxList1").css("display");
+			if (curD === "none") {
+				$("#syntaxList1").css("display", "block");
+			}
+			if (curD === "block") {
+				$("#syntaxList1").css("display", "none");
+			}
 		}
-		if (curD === "block") {
-			$("#syntaxList").css("display", "none");
+		if($("#query-tab").hasClass("active")) {
+			var curD = $("#syntaxList2").css("display");
+			if (curD === "none") {
+				$("#syntaxList2").css("display", "block");
+			}
+			if (curD === "block") {
+				$("#syntaxList2").css("display", "none");
+			}
 		}
 	}
 	$("#table_form").submit(function(e) {
@@ -153,10 +181,17 @@
     });
 	$("#editor-tab").on('click', function() {
 		$(".tab1").show();
+		$(".tab2").hide();
+		$(".tab3").hide();
+	});
+	$("#app-tab").on('click', function() {
+		$(".tab1").hide();
+		$(".tab2").show();
 		$(".tab3").hide();
 	});
 	$("#query-tab").on('click', function() {
 		$(".tab1").hide();
+		$(".tab2").hide();
 		$(".tab3").show();
 	});
 </script>

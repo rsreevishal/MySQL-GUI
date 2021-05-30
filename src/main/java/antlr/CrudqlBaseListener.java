@@ -138,6 +138,18 @@ public class CrudqlBaseListener implements CrudqlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	 public void enterCreateFormReport(CrudqlParser.CreateFormReportContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void exitCreateFormReport(CrudqlParser.CreateFormReportContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	 public void enterFormInput(CrudqlParser.FormInputContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -145,6 +157,30 @@ public class CrudqlBaseListener implements CrudqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	 public void exitFormInput(CrudqlParser.FormInputContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void enterCondition(CrudqlParser.ConditionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void exitCondition(CrudqlParser.ConditionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void enterOperator(CrudqlParser.OperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void exitOperator(CrudqlParser.OperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

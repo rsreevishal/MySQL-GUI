@@ -17,10 +17,12 @@ import model.TableRecordField;
 public class TableRecordCrud {
 	private DBConnector dbConnector;
 	private Connection sqlConnection;
+	private TableCrud tableCrud;
 
 	public TableRecordCrud() {
 		dbConnector = DBConnector.getInstance();
 		sqlConnection = dbConnector.getSqlConnection();
+		tableCrud = new TableCrud();
 	}
 
 	public void create(TableRecord record) {
@@ -79,6 +81,43 @@ public class TableRecordCrud {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	
+	}
+	
+	public ArrayList<TableRecord> getAll(String tablename) {
+		ArrayList<TableRecord> result = new ArrayList<TableRecord>();
+		Table table = tableCrud.get(tablename);
+		StringBuilder fields = new StringBuilder("");
+		for (Field field : table.getFields()) {
+			fields.append(field.getName()).append(",");
+		}
+		System.out.println(fields.toString());
+		String query = String.format("SELECT %s FROM %s;", fields.toString().substring(0, fields.length() - 1),
+				table.getName());
+		System.out.println(query);
+		try {
+			PreparedStatement statement = sqlConnection.prepareStatement(query);
+			ResultSet resultSet = statement.executeQuery();
+			while (resultSet.next()) {
+				TableRecord tableRecord = new TableRecord();
+				tableRecord.setTablename(table.getName());
+				ArrayList<TableRecordField> tableRecordFields = new ArrayList<TableRecordField>();
+				for (int fi = 0; fi < table.getFields().size(); fi++) {
+					Field field = table.getFields().get(fi);
+					if (field.getFieldConstraint().contains(FieldConstraint.PRIMARY_KEY)) {
+						tableRecord.setKey(new PrimaryKey(field.getName(), resultSet.getString(fi + 1)));;
+					}
+					TableRecordField trf = new TableRecordField(field.getFieldType(), field.getName(),
+							resultSet.getString(fi + 1));
+					tableRecordFields.add(trf);
+					
+				}
+				tableRecord.setFields(tableRecordFields);
+				result.add(tableRecord);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public ArrayList<TableRecord> getAll(Table table) {

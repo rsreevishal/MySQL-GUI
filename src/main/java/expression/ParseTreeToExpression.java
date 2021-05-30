@@ -7,7 +7,9 @@ import antlr.CrudqlBaseVisitor;
 import antlr.CrudqlParser.AddContext;
 import antlr.CrudqlParser.ColViewAllContext;
 import antlr.CrudqlParser.ColViewContext;
+import antlr.CrudqlParser.ConditionContext;
 import antlr.CrudqlParser.CreateFormContext;
+import antlr.CrudqlParser.CreateFormReportContext;
 import antlr.CrudqlParser.DeleteContext;
 import antlr.CrudqlParser.FormInputContext;
 import antlr.CrudqlParser.StoreColViewContext;
@@ -41,6 +43,20 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 			formInputs.add(formInput);
 		}	
 		return new FormExpr(idToken, formInputs);
+	}
+
+	@Override
+	public Expression visitCreateFormReport(CreateFormReportContext ctx) {
+		IdToken reportIdToken = new IdToken(ctx.ID().get(0).getText());
+		IdToken tableIdToken = new IdToken(ctx.ID().get(1).getText());
+		ArrayList<ConditionExpr> conditions = new ArrayList<ConditionExpr>();
+		for(ConditionContext cctx: ctx.condition()) {
+			IdToken colIdToken = new IdToken(cctx.ID().getText());
+			OperatorExpr operator = new OperatorExpr(cctx.operator().getText());
+			TextToken value = new TextToken(cctx.TEXT().getText().substring(1, cctx.TEXT().getText().length() - 1));
+			conditions.add(new ConditionExpr(colIdToken, value, operator));
+		}
+		return new CreateFormReportExpr(reportIdToken, tableIdToken, conditions);
 	}
 
 	@Override

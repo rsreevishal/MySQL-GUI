@@ -3,16 +3,7 @@ package crud.antlr;
 import java.util.ArrayList;
 import crud.TableCrud;
 import crud.TableRecordCrud;
-import expression.AddExpr;
-import expression.ColViewAllExpr;
-import expression.ColViewExpr;
-import expression.DeleteExpr;
-import expression.FormExpr;
-import expression.FormInputExpr;
-import expression.StoreColViewExpr;
-import expression.UpdateExpr;
-import expression.ViewAllExpr;
-import expression.ViewExpr;
+import expression.*;
 import model.Field;
 import model.FieldConstraint;
 import model.FieldType;
@@ -20,6 +11,11 @@ import model.PrimaryKey;
 import model.Table;
 import model.TableRecord;
 import model.TableRecordField;
+import model.filters.Condition;
+import model.filters.EqualsCondition;
+import model.filters.GreaterThanCondition;
+import model.filters.HasCondition;
+import model.filters.LesserThanCondition;
 
 public class AntlrTableRecordCrud {
 	private TableCrud tableCrud;
@@ -304,6 +300,48 @@ public class AntlrTableRecordCrud {
 				expr.idToken.id, table.getName(), inputs);
 	}
 	
+	public String createReport(CreateFormReportExpr expr) {
+		Table table = tableCrud.get(expr.table.id);
+		ArrayList<TableRecord> records = tableRecordCrud.getAll(table);
+		records = filter(records, expr);
+		if (records.size() > 0) {
+			String heading = "", values = "";
+			for (TableRecordField trf : records.get(0).getFields()) {
+				heading += String.format("<th scope='cols'>%s</th>", trf.getFieldName());
+			}
+			for (TableRecord record : records) {
+				String row = "";
+				for (TableRecordField trf : record.getFields()) {
+					row += String.format("<td>%s</td>", trf.getFieldValue());
+				}
+				values += String.format("<tr>%s</tr>", row);
+			}
+			String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
+			return tableStr;
+		}
+		return "<p style='color: red;'>No records<p>";
+	}
 	
+	public ArrayList<TableRecord> filter(ArrayList<TableRecord> record, CreateFormReportExpr expr) {
+		ArrayList<Condition> conditions = new ArrayList<Condition>();
+		for(ConditionExpr condition: expr.conditions) {
+			if(condition.operatorExpr.operator.equals("=")) {
+				conditions.add(new EqualsCondition(condition.colName.id, condition.colValue.text));
+			}
+			if(condition.operatorExpr.operator.equals(">")) {
+				conditions.add(new GreaterThanCondition(condition.colName.id, Integer.parseInt(condition.colValue.text)));
+			}
+			if(condition.operatorExpr.operator.equals("<")) {
+				conditions.add(new LesserThanCondition(condition.colName.id, Integer.parseInt(condition.colValue.text)));
+			}
+			if(condition.operatorExpr.operator.equals("HAS")) {
+				conditions.add(new HasCondition(condition.colName.id, condition.colValue.text));
+			}
+		}
+		for(Condition condition: conditions) {
+			record = condition.meetCondition(record);
+		}
+		return record;
+	}
 
 }

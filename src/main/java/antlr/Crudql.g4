@@ -38,11 +38,17 @@ storeColView: VAR '=' '(' colView ')';
 
 createForm: 'CREATE FORM' ID '[' formInput+ ']';
 
+createFormReport: 'CREATE VIEW' ID 'FOR' ID '[' condition+ ']';
+
 formInput: ID inputType LIST;
+
+condition: ID operator TEXT;
+
+operator: '=' | '>' | '<' | 'HAS';
 
 inputType: 'TEXT' | 'NUMBER' | 'TEXTAREA' | 'RADIO' | 'CHECKBOX' | 'PASSWORD' | 'EMAIL';
        
-expr: add | update | delete | view | viewAll | colView | colViewAll | storeColView | createForm;
+expr: add | update | delete | view | viewAll | colView | colViewAll | storeColView | createForm | createFormReport;
 
 /* Tokens */
 

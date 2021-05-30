@@ -2,3 +2,8 @@ CREATE FORM employee [
 	Name TEXT ('50')
 	Email TEXT ('50')
 ]
+
+CREATE VIEW report1 FOR employee [
+	Name = 'sree'
+	Salary > '5000'
+]

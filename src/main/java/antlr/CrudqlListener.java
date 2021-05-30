@@ -110,6 +110,16 @@ public interface CrudqlListener extends ParseTreeListener {
 	 */
 	void exitCreateForm(CrudqlParser.CreateFormContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CrudqlParser#createFormReport}.
+	 * @param ctx the parse tree
+	 */
+	void enterCreateFormReport(CrudqlParser.CreateFormReportContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CrudqlParser#createFormReport}.
+	 * @param ctx the parse tree
+	 */
+	void exitCreateFormReport(CrudqlParser.CreateFormReportContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CrudqlParser#formInput}.
 	 * @param ctx the parse tree
 	 */
@@ -119,6 +129,26 @@ public interface CrudqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFormInput(CrudqlParser.FormInputContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CrudqlParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterCondition(CrudqlParser.ConditionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CrudqlParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitCondition(CrudqlParser.ConditionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CrudqlParser#operator}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperator(CrudqlParser.OperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CrudqlParser#operator}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperator(CrudqlParser.OperatorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CrudqlParser#inputType}.
 	 * @param ctx the parse tree

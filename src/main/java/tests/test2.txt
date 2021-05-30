@@ -1,0 +1,20 @@
+CREATE FORM Employee [
+    Name TEXT ('5','50')
+    Email EMAIL ('5','50')
+    Password PASSWORD ('8','20')
+    Salary NUMBER ('100000','5000000')
+    Position RADIO ('CEO','MANAGER','CLERK')
+    Qualification CHECKBOX ('MBA','MS','BE')
+]
+
+CREATE FORM Student [
+Name TEXT ('3','20')
+Dept RADIO ('CSE','IT','EEE')
+Section RADIO ('A','B','C')
+Year NUMBER ('1','4')
+RollNo NUMBER ('1','1000')
+Summary TEXTAREA ('10', '50'),
+Courses CHECKBOX ('data structures','database','complier design')
+Clubs CHECKBOX ('ACE','ACM','FORSEE','MUSIC')
+Password PASSWORD ('8','20')
+]
