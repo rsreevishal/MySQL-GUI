@@ -13,6 +13,7 @@ import model.Field;
 import model.FieldConstraint;
 import model.FieldType;
 import model.Table;
+import model.TableQuery;
 
 public class TableCrud {
 	private DBConnector dbConnector;
@@ -65,6 +66,16 @@ public class TableCrud {
 			e.printStackTrace();
 		}
 	}
+	public void createReport(int table_id, String report) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_table_reports(table_id, report) values(?, ?);");
+			st.setInt(1, table_id);
+			st.setString(2, report);
+			st.executeUpdate();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
 	public String getLastForm() {
 		String result="<p style='color:red;'>No form found create one to view here..</p>";
 		try {
@@ -78,6 +89,21 @@ public class TableCrud {
 		}
 		return result;	
 	}
+	
+	public String getLastReport() {
+		String result="<p style='color:red;'>No reports found create one to view here..</p>";
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("select report from mysqlgui_table_reports order by id desc limit 1;");
+			ResultSet rs = st.executeQuery();
+			if(rs.next()) {
+				result = rs.getString(1);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return result;	
+	}
+	
 	public void delete(String tablename, int id) {
 		try {
 			PreparedStatement st = sqlConnection.prepareStatement("delete from mysqlgui_tables where id=?;");
@@ -171,5 +197,49 @@ public class TableCrud {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void saveFormQuery(int table_id, String name, String query) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_form_query(table_id, name, form) values(?, ?, ?);");
+			st.setInt(1, table_id);
+			st.setString(2, name);
+			st.setString(3, query);
+			st.executeUpdate();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void saveFormView(int table_id, String name, String query) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_report_query(table_id, name, report) values(?, ?, ?);");
+			st.setInt(1, table_id);
+			st.setString(2, name);
+			st.setString(3, query);
+			st.executeUpdate();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public ArrayList<TableQuery> getAllFormQuery(String type) {
+		ArrayList<TableQuery> result = new ArrayList<TableQuery>();
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement(String.format("select * from %s;", type));
+			ResultSet rs = st.executeQuery();
+			while(rs.next()) {
+				TableQuery query = new TableQuery();
+				query.setId(rs.getInt(1));
+				query.setTable_id(rs.getInt(2));
+				query.setName(rs.getString(3));
+				query.setQuery(rs.getString(4));
+				result.add(query);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+			return result;
+		}
+		return result;
 	}
 }

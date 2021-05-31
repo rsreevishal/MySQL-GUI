@@ -82,6 +82,18 @@
   	<description></description>
   	<servlet-class>controller.crudql.Crudql</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>ExportQuery</servlet-name>
+  	<display-name>ExportQuery</display-name>
+  	<description></description>
+  	<servlet-class>controller.crudql.ExportQuery</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>ImportQuery</servlet-name>
+  	<display-name>ImportQuery</display-name>
+  	<description></description>
+  	<servlet-class>controller.crudql.ImportQuery</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>Index</servlet-name>
   	<url-pattern>/</url-pattern>
@@ -133,5 +145,13 @@
   <servlet-mapping>
   	<servlet-name>Crudql</servlet-name>
   	<url-pattern>/Crudql</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>ExportQuery</servlet-name>
+  	<url-pattern>/ExportQuery</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>ImportQuery</servlet-name>
+  	<url-pattern>/ImportQuery</url-pattern>
   </servlet-mapping>
 </web-app>

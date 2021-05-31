@@ -75,7 +75,12 @@
 			<li class="nav-item" role="presentation">
 				<button class="nav-link ${ tab3 }" id="query-tab" data-toggle="tab"
 					data-target="#query" type="button" role="tab"
-					aria-controls="contact" aria-selected="false">Query</button>
+					aria-controls="query" aria-selected="false">Query</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="io-tab" data-toggle="tab"
+					data-target="#io" type="button" role="tab"
+					aria-controls="io" aria-selected="false">Export/Import</button>
 			</li>
 		</ul>
 		<div class="tab-content" id="myTabContent">
@@ -108,6 +113,9 @@
 					<c:when test="${queryResult != null}">
 						${queryResult}
 					</c:when>
+					<c:when test="${report != null}">
+						${report}
+					</c:when>
 					<c:otherwise>
 						<p class='text-info'>Create some reports to view here..</p>
 					</c:otherwise>
@@ -135,6 +143,35 @@
 					</c:otherwise>
 				</c:choose>
 			</div>
+			<div class="tab-pane fade show" id="io" role="tabpanel"
+				aria-labelledby="io-tab">
+					<h1>Forms and Reports</h1>
+					<h3>Export</h3>
+					<form class="form" action="/mysqlgui/ExportQuery" method="post">
+						<h5>Forms</h5>
+						<c:forEach items="${formQueries}" var="query">
+							<div class="form-group">
+								<input type="checkbox" name="formQueries" value="${query.getQuery()}"/>
+								<label>${ query.getName() }</label>
+							</div>
+						</c:forEach>
+						<h5>Reports</h5>
+						<c:forEach items="${reportQueries}" var="report">
+							<div class="form-group">
+								<input type="checkbox" name="reportQueries" value="${report.getQuery()}"/>
+								<label>${ report.getName() }</label>
+							</div>
+						</c:forEach>
+						<input type="hidden" name="tab" value="tab2"/>
+						<button type="submit" class="btn btn-success">Export</button>
+					</form>
+					<h3>Import</h3>
+					<form class="form" method="post" action="/mysqlgui/ImportQuery" enctype="multipart/form-data">
+					    Choose a file: <input class="form-control" type="file" name="queryFile" required/>
+					    <input type="hidden" name="tab" value="tab2"/>
+					    <input class="btn btn-success" type="submit" value="Upload" />
+					</form>
+				</div>
 		</div>
 
 

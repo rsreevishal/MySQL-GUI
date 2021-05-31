@@ -1,3 +1,4 @@
+CREATE FORM employee [ Name TEXT ('3','50') Email TEXT ('5','50') Salary NUMBER ('100000','1000000') Position RADIO ('CEO','MANAGER','CLERK') Qualification CHECKBOX ('MBA','MS','BE') ]
 CREATE FORM employee [
 	Name TEXT ('3','50')
 	Email TEXT ('5','50')

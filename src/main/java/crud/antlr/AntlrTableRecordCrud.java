@@ -244,6 +244,7 @@ public class AntlrTableRecordCrud {
 		}
 		table.setFields(fields);
 		Table result = tableCrud.create(table);
+		tableCrud.saveFormQuery(result.getId(), expr.idToken.id, expr.getQuery());
 		String form = formExprToHTMLForm(expr, result);
 		tableCrud.createForm(result.getId(), form);
 		return "<p style='color: green;'>Successfully created form<p>";
@@ -310,8 +311,10 @@ public class AntlrTableRecordCrud {
 	
 	public String createReport(CreateFormReportExpr expr) {
 		Table table = tableCrud.get(expr.table.id);
+		tableCrud.saveFormView(table.getId(), expr.name.id, expr.getQuery());
 		ArrayList<TableRecord> records = tableRecordCrud.getAll(table);
 		records = filter(records, expr);
+		String result = "<p style='color: red;'>No records<p>";
 		if (records.size() > 0) {
 			String heading = "", values = "";
 			for (TableRecordField trf : records.get(0).getFields()) {
@@ -325,9 +328,10 @@ public class AntlrTableRecordCrud {
 				values += String.format("<tr>%s</tr>", row);
 			}
 			String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
-			return tableStr;
+			result = tableStr;
+			tableCrud.createReport(table.getId(), result);
 		}
-		return "<p style='color: red;'>No records<p>";
+		return result;
 	}
 	
 	public ArrayList<TableRecord> filter(ArrayList<TableRecord> record, CreateFormReportExpr expr) {
