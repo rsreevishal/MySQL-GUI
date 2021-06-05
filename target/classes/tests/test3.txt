@@ -1,0 +1,11 @@
+CREATE FORM Student [
+ Name TEXT ('3','20')
+ Email TEXT ('5','30')
+ Salary LINK ('Mentor','Salary')
+]
+
+CREATE FORM Mentor [
+ Name TEXT ('3','20')
+ Salary NUMBER ('100000','1000000')
+ Email LINK ('Student','Email')
+]

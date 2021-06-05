@@ -8,7 +8,7 @@ import crud.antlr.AntlrTableRecordCrud;
 import expression.*;
 
 public class CrudqlProcessor {
-	public static String process(String expressions) {
+	public static String process(String expressions, boolean createNew) {
 		CrudqlParser parser = getParser(expressions);
 		AntlrTableRecordCrud antlrRecordCrud = new AntlrTableRecordCrud();
 		// Tell ANTLR to build a parse tree
@@ -20,7 +20,7 @@ public class CrudqlProcessor {
 			return CrudqlErrorListener.errorMsg;
 		} else {
 			// Create a visitor for converting the parse tree into Program/Expression object
-			ParseTreeToProgram progVisitor = new ParseTreeToProgram();
+			ParseTreeToProgram progVisitor = new ParseTreeToProgram(createNew);
 			Program prog = progVisitor.visit(antlrAST);
 			if(progVisitor.semanticErrors.size() > 0) {
 				String errors = "";
@@ -33,9 +33,9 @@ public class CrudqlProcessor {
 				int counter = 0;
 				for(Expression e: prog.expressions) {
 					counter += 1;
-					if(e instanceof FormExpr) {
-						result += String.format("<li class='list-group-item tab1'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
-					} else if(e instanceof CreateFormReportExpr) {
+					if(e instanceof FormExpr ) {
+						result += String.format("<li class='list-group-item tab2'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>%s</button>", counter, ((FormExpr)e).idToken.id);
+					}  else if(e instanceof CreateFormReportExpr) {
 						result += String.format("<li class='list-group-item tab2'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>%s</button>", counter, ((CreateFormReportExpr)e).name.id);
 					} else {
 						result += String.format("<li class='list-group-item tab3'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
@@ -104,14 +104,14 @@ public class CrudqlProcessor {
 						
 						System.out.println("Creating form");
 						FormExpr expr = (FormExpr)e;
-						String output = antlrRecordCrud.createFormTable(expr);
+						String output = antlrRecordCrud.createFormTable(expr, createNew);
 						result += String.format("<div id='%s'>%s</div>", "result_" + counter, output);
 						
 					} else if(e instanceof CreateFormReportExpr) {
 						
 						System.out.println("Creating form report");
 						CreateFormReportExpr expr = (CreateFormReportExpr)e;
-						String output = antlrRecordCrud.createReport(expr);
+						String output = antlrRecordCrud.createReport(expr, createNew);
 						result += String.format("<div id='%s'>%s</div>", "result_" + counter, output);
 						
 					}

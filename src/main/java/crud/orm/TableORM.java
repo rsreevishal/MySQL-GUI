@@ -22,7 +22,7 @@ public class TableORM {
 			for (Field f : table.getFields()) {
 				columns.append(f.getName() + " " + FieldType.filter(f.getFieldType()) + ",");
 			}
-			String query = String.format("CREATE TABLE %s(%s);", table.getName(),
+			String query = String.format("CREATE TABLE IF NOT EXISTS %s(%s);", table.getName(),
 					columns.toString().substring(0, columns.length() - 1));
 			System.out.println("Query: " + query);
 			PreparedStatement st = sqlConnection.prepareStatement(query);

@@ -1,3 +1,4 @@
+<%@ page import="model.TableQueryType"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -107,17 +108,13 @@
 				</div>
 			<div class="tab-pane fade show ${ tab2 }" id="app" role="tabpanel"
 				aria-labelledby="app-tab">
-				${form}
 				<p id="table_form_result"></p>
 				<c:choose>
-					<c:when test="${queryResult != null}">
-						${queryResult}
-					</c:when>
-					<c:when test="${report != null}">
-						${report}
+					<c:when test="${queryOutput != null}">
+						${queryOutput}
 					</c:when>
 					<c:otherwise>
-						<p class='text-info'>Create some reports to view here..</p>
+						<p class='text-info'>Create some form or reports to view here..</p>
 					</c:otherwise>
 				</c:choose>
 				</div>
@@ -150,17 +147,21 @@
 					<form class="form" action="/mysqlgui/ExportQuery" method="post">
 						<h5>Forms</h5>
 						<c:forEach items="${formQueries}" var="query">
-							<div class="form-group">
+							<c:if test="${ query.getType() == TableQueryType.FORM}">
+								<div class="form-group">
+									<input type="checkbox" name="formQueries" value="${query.getQuery()}"/>
+									<label>${ query.getName() }</label>
+								</div>
+							</c:if>
+						</c:forEach>
+						<h5>Reports</h5>
+						<c:forEach items="${formQueries}" var="query">
+							<c:if test="${ query.getType() == TableQueryType.VIEW}">
+								<div class="form-group">
 								<input type="checkbox" name="formQueries" value="${query.getQuery()}"/>
 								<label>${ query.getName() }</label>
 							</div>
-						</c:forEach>
-						<h5>Reports</h5>
-						<c:forEach items="${reportQueries}" var="report">
-							<div class="form-group">
-								<input type="checkbox" name="reportQueries" value="${report.getQuery()}"/>
-								<label>${ report.getName() }</label>
-							</div>
+							</c:if>
 						</c:forEach>
 						<input type="hidden" name="tab" value="tab2"/>
 						<button type="submit" class="btn btn-success">Export</button>

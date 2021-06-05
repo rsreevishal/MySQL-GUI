@@ -20,10 +20,25 @@ import antlr.CrudqlParser.UpdateContext;
 import antlr.CrudqlParser.ViewAllContext;
 import antlr.CrudqlParser.ViewContext;
 import model.Field;
+import model.Pair;
 import model.Table;
 
 public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 	private String exprQuery;
+	public ArrayList<String> semanticErrors;
+	public HashMap<String, String> vars;
+	private ArrayList<Table> tables;
+	private boolean createNew;
+	private ArrayList<Pair<String, String>> linkedTables;
+
+	public ParseTreeToExpression(ArrayList<String> semanticErrors, HashMap<String, String> vars,
+			ArrayList<Table> tables, boolean _createNew, ArrayList<Pair<String, String>> _linkedTables) {
+		this.semanticErrors = semanticErrors;
+		this.tables = tables;
+		this.vars = vars;
+		this.createNew = _createNew;
+		this.linkedTables = _linkedTables;
+	}
 	
 	private void getQuery(ParseTree ctx) {
 		if(ctx != null) {
@@ -41,7 +56,7 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 		getQuery(ctx);
 		IdToken idToken = new IdToken(ctx.ID().getText());
 		Table table = containTable(idToken);
-		if (table != null) {
+		if (table != null && this.createNew) {
 			semanticErrors.add(String
 					.format("<p><span style='color:red;'>%s</span> already exists in the database!</p>", idToken.id));
 		}
@@ -55,6 +70,9 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 				args.add(arg.substring(1, arg.length() - 1));
 			}
 			InputType inputType = InputType.valueOf(fictx.inputType().getText());
+			if(inputType == InputType.LINK) {
+				linkedTables.add(new Pair<String, String>(args.get(0),args.get(1)));
+			}
 			FormInputExpr formInput = new FormInputExpr(fIdToken, inputType, args);
 			formInputs.add(formInput);
 		}	
@@ -145,17 +163,6 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 		UidToken uidToken = new UidToken(Integer.parseInt(ctx.colView().UID().getText()));
 		ColViewExpr colViewExpr = new ColViewExpr(idToken, colToken, uidToken);
 		return new StoreColViewExpr(varToken, colViewExpr);
-	}
-
-	public ArrayList<String> semanticErrors;
-	public HashMap<String, String> vars;
-	private ArrayList<Table> tables;
-
-	public ParseTreeToExpression(ArrayList<String> semanticErrors, HashMap<String, String> vars,
-			ArrayList<Table> tables) {
-		this.semanticErrors = semanticErrors;
-		this.tables = tables;
-		this.vars = vars;
 	}
 
 	private Table containTable(IdToken idToken) {

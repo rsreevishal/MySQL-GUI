@@ -1,7 +1,4 @@
 package model;
-
-import java.util.ArrayList;
-
 import expression.InputType;
 
 public enum FieldType {

@@ -3,6 +3,7 @@ package model;
 public class TableQuery {
 	private int id, table_id;
 	private String name, query;
+	private TableQueryType type;
 	public int getId() {
 		return id;
 	}
@@ -26,5 +27,11 @@ public class TableQuery {
 	}
 	public void setQuery(String query) {
 		this.query = query;
+	}
+	public TableQueryType getType() {
+		return type;
+	}
+	public void setType(TableQueryType type) {
+		this.type = type;
 	}
 }

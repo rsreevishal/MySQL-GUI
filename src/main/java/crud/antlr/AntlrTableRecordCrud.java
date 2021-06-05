@@ -9,6 +9,7 @@ import model.FieldConstraint;
 import model.FieldType;
 import model.PrimaryKey;
 import model.Table;
+import model.TableQueryType;
 import model.TableRecord;
 import model.TableRecordField;
 import model.filters.Condition;
@@ -222,7 +223,7 @@ public class AntlrTableRecordCrud {
 		return record.getFields().get(0).getFieldValue();
 	}
 
-	public String createFormTable(FormExpr expr) {
+	public String createFormTable(FormExpr expr, boolean createNew) {
 		Table table = new Table();
 		table.setName(expr.idToken.id);
 		ArrayList<Field> fields = new ArrayList<Field>();
@@ -236,18 +237,30 @@ public class AntlrTableRecordCrud {
 		for (FormInputExpr fie : expr.formInputs) {
 			Field field = new Field();
 			field.setName(fie.idToken.id);
-			field.setFieldType(FieldType.fromInputType(fie.inputType));
+			if(fie.inputType == InputType.LINK) {
+				Field originalField = tableCrud.getField(fie.args.get(0), fie.args.get(1));
+				if(originalField != null) {
+					field.setFieldType(originalField.getFieldType());
+					field.setFieldConstraint(originalField.getFieldConstraint());
+				} else {
+					field.setFieldType(FieldType.VARCHAR);			
+				}
+			} else {
+				field.setFieldType(FieldType.fromInputType(fie.inputType));
+			}
 			ArrayList<FieldConstraint> constraints = new ArrayList<FieldConstraint>();
 			constraints.add(FieldConstraint.NOT_NULL);
 			field.setFieldConstraint(constraints);
 			fields.add(field);
 		}
 		table.setFields(fields);
-		Table result = tableCrud.create(table);
-		tableCrud.saveFormQuery(result.getId(), expr.idToken.id, expr.getQuery());
+		Table result = table;
+		if(createNew) {
+			 result = tableCrud.create(table);
+			 tableCrud.saveFormQuery(result.getId(), expr.idToken.id, expr.getQuery(), TableQueryType.FORM.toString());
+		}
 		String form = formExprToHTMLForm(expr, result);
-		tableCrud.createForm(result.getId(), form);
-		return "<p style='color: green;'>Successfully created form<p>";
+		return form;
 	}
 
 	public String formExprToHTMLForm(FormExpr expr, Table table) {
@@ -275,6 +288,18 @@ public class AntlrTableRecordCrud {
 				formGroup += String.format(
 						"<textarea class='form-control' minlength='%s' maxlength='%s' name='fieldValue' required></textarea>",
 						fie.args.get(0), fie.args.get(1), fie.idToken.id);
+				break;
+			}
+			case LINK: {
+				formGroup += String.format("<label>%s</label>", fie.idToken.id);
+				ArrayList<TableRecord> records = tableRecordCrud.getAll(tableCrud.get(fie.args.get(0)), fie.args.get(1));
+				String options = "";
+				for(TableRecord record: records) {
+					for(TableRecordField trf: record.getFields()) {
+						options += String.format("<option value='%s'>%s</option>", trf.getFieldValue(), trf.getFieldValue());
+					}
+				}
+				formGroup += String.format("<select class='form-control' name='fieldValue' required>%s</select>", options);
 				break;
 			}
 			case CHECKBOX: {
@@ -309,9 +334,11 @@ public class AntlrTableRecordCrud {
 				expr.idToken.id, table.getName(), inputs);
 	}
 	
-	public String createReport(CreateFormReportExpr expr) {
+	public String createReport(CreateFormReportExpr expr, boolean createNew) {
 		Table table = tableCrud.get(expr.table.id);
-		tableCrud.saveFormView(table.getId(), expr.name.id, expr.getQuery());
+		if(createNew) {
+			tableCrud.saveFormQuery(table.getId(), expr.name.id, expr.getQuery(), TableQueryType.VIEW.toString());
+		}
 		ArrayList<TableRecord> records = tableRecordCrud.getAll(table);
 		records = filter(records, expr);
 		String result = "<p style='color: red;'>No records<p>";
@@ -329,7 +356,6 @@ public class AntlrTableRecordCrud {
 			}
 			String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
 			result = tableStr;
-			tableCrud.createReport(table.getId(), result);
 		}
 		return result;
 	}

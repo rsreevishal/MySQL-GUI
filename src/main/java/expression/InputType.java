@@ -7,5 +7,6 @@ public enum InputType {
 	RADIO,
 	CHECKBOX,
 	PASSWORD,
-	EMAIL
+	EMAIL,
+	LINK
 }

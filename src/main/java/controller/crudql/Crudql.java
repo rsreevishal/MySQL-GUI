@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import antlr.CrudqlProcessor;
 import crud.TableCrud;
 import model.TableQuery;
+import model.TableQueryType;
 public class Crudql extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TableCrud tableCrud;
@@ -20,14 +21,23 @@ public class Crudql extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String form = tableCrud.getLastForm();
-		String report = tableCrud.getLastReport();
-		ArrayList<TableQuery> formQueries = tableCrud.getAllFormQuery("mysqlgui_form_query");
-		ArrayList<TableQuery> reportQueries = tableCrud.getAllFormQuery("mysqlgui_report_query");
-		request.setAttribute("form", form);
-		request.setAttribute("report", report);
+		ArrayList<TableQuery> formQueries = tableCrud.getAllFormQuery();
+		String form = tableCrud.getLastQueries(2, TableQueryType.FORM);
+		String report = tableCrud.getLastQueries(1, TableQueryType.VIEW);
+		System.out.println("Form query: " + form);
+		System.out.println("Report query: " + report);
+		String queryOutput = "";
+		if(form.length() > 0 && report.length() > 0) {
+			queryOutput = CrudqlProcessor.process(form + "\n" + report, false);	
+		}
+		if(form.length() == 0) {
+			queryOutput += ("\n" + "<p style='color:red;'>No form found create one to view here..</p>");
+		}
+		if(report.length() == 0) {
+			queryOutput += ("\n" + "<p style='color:red;'>No report found create one to view here..</p>");
+		}
+		request.setAttribute("queryOutput", queryOutput);
 		request.setAttribute("formQueries", formQueries);
-		request.setAttribute("reportQueries", reportQueries);
 		request.getRequestDispatcher("crudql.jsp").forward(request, response);
 	}
 
@@ -42,7 +52,7 @@ public class Crudql extends HttpServlet {
 		request.setAttribute("tab2", tab.equals("tab2") ? "active" : "");
 		request.setAttribute("tab3", tab.equals("tab3") ? "active" : "");
 		System.out.println("Query: " + query);
-		String queryResult = CrudqlProcessor.process(query);
+		String queryResult = CrudqlProcessor.process(query, true);
 		request.setAttribute("queryResult", queryResult);
 		doGet(request, response);
 	}

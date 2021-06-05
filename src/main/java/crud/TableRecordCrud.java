@@ -159,6 +159,9 @@ public class TableRecordCrud {
 	
 	public ArrayList<TableRecord> getAll(Table table, String colName) {
 		ArrayList<TableRecord> result = new ArrayList<TableRecord>();
+		if(table == null) {
+			return result;
+		}
 		String query = String.format("SELECT %s FROM %s;", colName,
 				table.getName());
 		System.out.println(query);
@@ -186,6 +189,7 @@ public class TableRecordCrud {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return result;
 		}
 		return result;
 	}

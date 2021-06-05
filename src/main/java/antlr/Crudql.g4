@@ -46,7 +46,7 @@ condition: ID operator TEXT;
 
 operator: '=' | '>' | '<' | 'HAS';
 
-inputType: 'TEXT' | 'NUMBER' | 'TEXTAREA' | 'RADIO' | 'CHECKBOX' | 'PASSWORD' | 'EMAIL';
+inputType: 'TEXT' | 'NUMBER' | 'TEXTAREA' | 'RADIO' | 'CHECKBOX' | 'PASSWORD' | 'EMAIL' | 'LINK';
        
 expr: add | update | delete | view | viewAll | colView | colViewAll | storeColView | createForm | createFormReport;
 
