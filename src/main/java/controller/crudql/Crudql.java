@@ -1,7 +1,8 @@
 package controller.crudql;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,8 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import antlr.CrudqlProcessor;
 import crud.TableCrud;
-import model.TableQuery;
-import model.TableQueryType;
+import ftl_templates.FTLConvertor;
+import model.ExportModel;
 public class Crudql extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TableCrud tableCrud;
@@ -21,23 +22,25 @@ public class Crudql extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ArrayList<TableQuery> formQueries = tableCrud.getAllFormQuery();
-		String form = tableCrud.getLastQueries(2, TableQueryType.FORM);
-		String report = tableCrud.getLastQueries(1, TableQueryType.VIEW);
-		System.out.println("Form query: " + form);
-		System.out.println("Report query: " + report);
 		String queryOutput = "";
-		if(form.length() > 0 && report.length() > 0) {
-			queryOutput = CrudqlProcessor.process(form + "\n" + report, false);	
+		ExportModel model = tableCrud.getApp();
+		if(model.getForms().size() > 0 || model.getReports().size() > 0) {
+			Map<String, Object> templateData = new HashMap<String, Object>();
+			templateData.put("forms", model.getForms());
+			templateData.put("reports", model.getReports());
+			String queries = FTLConvertor.convert(templateData, "ftl_templates/export.ftl");
+			if(queries.length() > 0) {
+				queryOutput = CrudqlProcessor.process(queries, false);
+			}
+			request.setAttribute("formQueries", queries);
 		}
-		if(form.length() == 0) {
+		if(model.getForms().size() == 0) {
 			queryOutput += ("\n" + "<p style='color:red;'>No form found create one to view here..</p>");
 		}
-		if(report.length() == 0) {
+		if(model.getReports().size() == 0) {
 			queryOutput += ("\n" + "<p style='color:red;'>No report found create one to view here..</p>");
 		}
 		request.setAttribute("queryOutput", queryOutput);
-		request.setAttribute("formQueries", formQueries);
 		request.getRequestDispatcher("crudql.jsp").forward(request, response);
 	}
 

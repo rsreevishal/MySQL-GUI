@@ -145,24 +145,7 @@
 					<h1>Forms and Reports</h1>
 					<h3>Export</h3>
 					<form class="form" action="/mysqlgui/ExportQuery" method="post">
-						<h5>Forms</h5>
-						<c:forEach items="${formQueries}" var="query">
-							<c:if test="${ query.getType() == TableQueryType.FORM}">
-								<div class="form-group">
-									<input type="checkbox" name="formQueries" value="${query.getQuery()}"/>
-									<label>${ query.getName() }</label>
-								</div>
-							</c:if>
-						</c:forEach>
-						<h5>Reports</h5>
-						<c:forEach items="${formQueries}" var="query">
-							<c:if test="${ query.getType() == TableQueryType.VIEW}">
-								<div class="form-group">
-								<input type="checkbox" name="formQueries" value="${query.getQuery()}"/>
-								<label>${ query.getName() }</label>
-							</div>
-							</c:if>
-						</c:forEach>
+						<input type="hidden" name="export_query" value="${formQueries}"> 
 						<input type="hidden" name="tab" value="tab2"/>
 						<button type="submit" class="btn btn-success">Export</button>
 					</form>

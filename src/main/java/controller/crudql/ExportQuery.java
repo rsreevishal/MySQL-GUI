@@ -25,19 +25,9 @@ public class ExportQuery extends HttpServlet {
 		String filename = "export.txt";
 		response.setContentType("APPLICATION/OCTET-STREAM");   
 		response.setHeader("Content-Disposition","attachment; filename=\"" + filename + "\"");   
-		String[] formQueries = request.getParameterValues("formQueries");
-		String[] reportQueries = request.getParameterValues("reportQueries");
-		if(formQueries != null) {
-			for(String query: formQueries) {
-				out.write(query);
-				out.write('\n');
-			}
-		}
-		if(reportQueries != null) {
-			for(String query: reportQueries) {
-				out.write(query);
-				out.write('\n');
-			}
+		String queryOutput = request.getParameter("export_query");
+		if(queryOutput != null) {
+			out.write(queryOutput);
 		}
 		out.close();
 	}

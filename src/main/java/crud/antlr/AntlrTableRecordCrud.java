@@ -9,7 +9,6 @@ import model.FieldConstraint;
 import model.FieldType;
 import model.PrimaryKey;
 import model.Table;
-import model.TableQueryType;
 import model.TableRecord;
 import model.TableRecordField;
 import model.filters.Condition;
@@ -257,7 +256,7 @@ public class AntlrTableRecordCrud {
 		Table result = table;
 		if(createNew) {
 			 result = tableCrud.create(table);
-			 tableCrud.saveFormQuery(result.getId(), expr.idToken.id, expr.getQuery(), TableQueryType.FORM.toString());
+			 tableCrud.saveFormQuery(result.getId(), expr);
 		}
 		String form = formExprToHTMLForm(expr, result);
 		return form;
@@ -337,7 +336,7 @@ public class AntlrTableRecordCrud {
 	public String createReport(CreateFormReportExpr expr, boolean createNew) {
 		Table table = tableCrud.get(expr.table.id);
 		if(createNew) {
-			tableCrud.saveFormQuery(table.getId(), expr.name.id, expr.getQuery(), TableQueryType.VIEW.toString());
+			tableCrud.saveFormQuery(table.getId(), expr);
 		}
 		ArrayList<TableRecord> records = tableRecordCrud.getAll(table);
 		records = filter(records, expr);

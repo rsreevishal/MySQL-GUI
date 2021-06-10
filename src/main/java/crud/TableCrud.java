@@ -6,14 +6,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import core.DBConnector;
 import crud.orm.TableORM;
+import expression.ConditionExpr;
+import expression.CreateFormReportExpr;
+import expression.FormExpr;
+import expression.FormInputExpr;
+import model.ExportModel;
 import model.Field;
 import model.FieldConstraint;
 import model.FieldType;
+import model.Form;
+import model.FormInput;
+import model.Report;
 import model.Table;
-import model.TableQuery;
 import model.TableQueryType;
 
 public class TableCrud {
@@ -57,21 +65,47 @@ public class TableCrud {
 		}
 		return null;
 	}
-
-	public String getLastQueries(int count, TableQueryType type) {
-		String result = "";
+	
+	public ExportModel getApp() {
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("select query from mysqlgui_form_query where type = ? order by id desc limit ?;");
-			st.setString(1, type.toString());
-			st.setInt(2, count);
+			HashMap<Integer, Form> forms = new HashMap<Integer, Form>();
+			HashMap<Integer, Report> reports = new HashMap<Integer, Report>();
+			PreparedStatement st = sqlConnection.prepareStatement("select fi.type, fi.table_id, t.tablename, fi.name, fi.field, fi.link, fi.args from mysqlgui_form_inputs as fi join mysqlgui_tables as t on fi.table_id = t.id;");
 			ResultSet rs = st.executeQuery();
 			while(rs.next()) {
-				result += (rs.getString(1) + "\n");
+				TableQueryType type = TableQueryType.valueOf(rs.getString(1));
+				switch(type) {
+				case FORM: {
+					int pk = rs.getInt(2);
+					if(!forms.containsKey(pk)) {
+						Form form = new Form();
+						form.setName(rs.getString(3));
+						forms.put(pk, form);
+					}
+					forms.get(pk).addInput(new FormInput(rs.getString(5), rs.getString(6), rs.getString(7)));
+					break;
+				}
+				case VIEW: {
+					int pk = rs.getInt(2);
+					if(!reports.containsKey(pk)) {
+						Report report = new Report();
+						report.setTable(rs.getString(3));
+						report.setName(rs.getString(4));
+						reports.put(pk, report);
+					}
+					reports.get(pk).addInput(new FormInput(rs.getString(5), rs.getString(6), rs.getString(7)));
+					break;
+				}
+				}
 			}
+			ExportModel result = new ExportModel();
+			result.setForms(new ArrayList<Form>(forms.values()));
+			result.setReports(new ArrayList<Report>(reports.values()));
+			return result;
 		} catch(SQLException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return result;	
 	}
 	
 	public void delete(String tablename, int id) {
@@ -171,38 +205,42 @@ public class TableCrud {
 		return null;
 	}
 	
-	public void saveFormQuery(int table_id, String name, String query, String type) {
+	public void saveFormQuery(int table_id, FormExpr expr) {
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_form_query(table_id, name, query, type) values(?, ?, ?, ?);");
-			st.setInt(1, table_id);
-			st.setString(2, name);
-			st.setString(3, query);
-			st.setString(4, type);
-			st.executeUpdate();
+			for(FormInputExpr fie : expr.formInputs) {
+				PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_form_inputs(table_id, field, link, args, type, name) values(?, ?, ?, ?, ?, ?);");
+				st.setInt(1, table_id);
+				st.setString(2, fie.idToken.id);
+				st.setString(3, fie.inputType.toString());
+				String args = "";
+				for(String arg: fie.args) {
+					args += String.format(",'%s'", arg);
+				}
+				st.setString(4, args.substring(1));
+				st.setString(5, TableQueryType.FORM.toString());
+				st.setString(6, expr.idToken.id);
+				st.executeUpdate();
+			}
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public ArrayList<TableQuery> getAllFormQuery() {
-		ArrayList<TableQuery> result = new ArrayList<TableQuery>();
+	public void saveFormQuery(int table_id, CreateFormReportExpr expr) {
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement(String.format("select id,table_id,name,query,type from mysqlgui_form_query;"));
-			ResultSet rs = st.executeQuery();
-			while(rs.next()) {
-				TableQuery query = new TableQuery();
-				query.setId(rs.getInt(1));
-				query.setTable_id(rs.getInt(2));
-				query.setName(rs.getString(3));
-				query.setQuery(rs.getString(4));
-				query.setType(TableQueryType.valueOf(rs.getString(5)));
-				result.add(query);
+			for(ConditionExpr ce : expr.conditions) {
+				PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_form_inputs(table_id, field, link, args, type, name) values(?, ?, ?, ?, ?, ?);");
+				st.setInt(1, table_id);
+				st.setString(2, ce.colName.id);
+				st.setString(3, ce.operatorExpr.operator);
+				st.setString(4, "'" + ce.colValue.text + "'");
+				st.setString(5, TableQueryType.VIEW.toString());
+				st.setString(6, expr.table.id);
+				st.executeUpdate();
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
-			return result;
 		}
-		return result;
 	}
 	
 	public Field getField(String tablename, String field) {
