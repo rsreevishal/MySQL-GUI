@@ -7,4 +7,12 @@ public class StoreColViewExpr extends Expression {
 		this.varToken = varToken;
 		this.colViewExpr = colViewExpr;
 	}
+	@Override
+	public String toHTML() {
+		return String.format("<div><h3>%s</h3>%s</div>", varToken.toHTML(), colViewExpr.toHTML());
+	}
+	@Override
+	public String toFTL() {
+		return "";
+	}
 }

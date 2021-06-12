@@ -35,8 +35,8 @@ public class CrudqlProcessor {
 					counter += 1;
 					if(e instanceof FormExpr ) {
 						result += String.format("<li class='list-group-item tab2'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>%s</button>", counter, ((FormExpr)e).idToken.id);
-					}  else if(e instanceof CreateFormReportExpr) {
-						result += String.format("<li class='list-group-item tab2'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>%s</button>", counter, ((CreateFormReportExpr)e).name.id);
+					}  else if(e instanceof FormReportExpr) {
+						result += String.format("<li class='list-group-item tab2'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>%s</button>", counter, ((FormReportExpr)e).name.id);
 					} else {
 						result += String.format("<li class='list-group-item tab3'><button data-toggle='collapse' data-target='#result_%d' class='btn btn-warning'>Result %d</button>", counter, counter);
 					}
@@ -107,10 +107,10 @@ public class CrudqlProcessor {
 						String output = antlrRecordCrud.createFormTable(expr, createNew);
 						result += String.format("<div id='%s'>%s</div>", "result_" + counter, output);
 						
-					} else if(e instanceof CreateFormReportExpr) {
+					} else if(e instanceof FormReportExpr) {
 						
 						System.out.println("Creating form report");
-						CreateFormReportExpr expr = (CreateFormReportExpr)e;
+						FormReportExpr expr = (FormReportExpr)e;
 						String output = antlrRecordCrud.createReport(expr, createNew);
 						result += String.format("<div id='%s'>%s</div>", "result_" + counter, output);
 						

@@ -157,7 +157,8 @@ public class TableRecordCrud {
 		return result;
 	}
 	
-	public ArrayList<TableRecord> getAll(Table table, String colName) {
+	public ArrayList<TableRecord> getAll(String tablename, String colName) {
+		Table table = tableCrud.get(tablename);
 		ArrayList<TableRecord> result = new ArrayList<TableRecord>();
 		if(table == null) {
 			return result;
@@ -194,6 +195,19 @@ public class TableRecordCrud {
 		return result;
 	}
 	
+	public ArrayList<String> getAllValues(String tablename, String colName) {
+		ArrayList<TableRecord> records = getAll(tablename, colName);
+		ArrayList<String> output = new ArrayList<String>();
+		for(TableRecord record: records) {
+			for(TableRecordField field: record.getFields()) {
+				if(field.getFieldName().equals(colName)) {
+					output.add(field.getFieldValue());
+				}
+ 			}
+		}
+		return output;
+	}
+	
 	public TableRecord get(Table table, PrimaryKey key) {
 		TableRecord result = new TableRecord();
 		StringBuilder fields = new StringBuilder("");
@@ -223,6 +237,8 @@ public class TableRecordCrud {
 				}
 				tableRecord.setFields(tableRecordFields);
 				result = tableRecord;
+			} else {
+				return null;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -255,6 +271,8 @@ public class TableRecordCrud {
 				}
 				tableRecord.setFields(tableRecordFields);
 				result = tableRecord;
+			} else {
+				return null;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

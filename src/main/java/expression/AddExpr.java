@@ -7,4 +7,14 @@ public class AddExpr extends Expression {
 		this.idToken = idToken;
 		this.listToken = listToken;
 	}
+	@Override
+	public String toHTML() {
+		return String.format(
+				"<p><span style='color: #4287f5;'>Record: %s </span> <span style='color: green;'>inserted</span> successfully in %s!</p>",
+				listToken.toHTML(), idToken.toHTML());
+	}
+	@Override
+	public String toFTL() {
+		return "";
+	}
 }

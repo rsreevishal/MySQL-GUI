@@ -9,4 +9,12 @@ public class UListToken extends Expression {
 		this.uidToken = uidToken;
 		this.values = values;
 	}
+	@Override
+	public String toHTML() {
+		return values.toString();
+	}
+	@Override
+	public String toFTL() {
+		return "";
+	}
 }

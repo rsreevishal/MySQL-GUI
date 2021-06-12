@@ -1,8 +1,6 @@
 package controller.crudql;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,25 +8,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import antlr.CrudqlProcessor;
-import crud.TableCrud;
-import ftl_templates.FTLConvertor;
+import crud.ExportCrud;
+import expression.FormExpr;
+import expression.FormReportExpr;
 import model.ExportModel;
+
 public class Crudql extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private TableCrud tableCrud;
+	private ExportCrud exportCrud;
     public Crudql() {
         super();
-    	tableCrud = new TableCrud();
+    	exportCrud = new ExportCrud();
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String queryOutput = "";
-		ExportModel model = tableCrud.getApp();
+		ExportModel model = exportCrud.exportApp();
 		if(model.getForms().size() > 0 || model.getReports().size() > 0) {
-			Map<String, Object> templateData = new HashMap<String, Object>();
-			templateData.put("forms", model.getForms());
-			templateData.put("reports", model.getReports());
-			String queries = FTLConvertor.convert(templateData, "ftl_templates/export.ftl");
+			String queries = "";
+			for(FormExpr form: model.getForms()) {
+				queries += (form.toFTL() + "\n");
+			}
+			for(FormReportExpr report: model.getReports()) {
+				queries += (report.toFTL() + "\n");
+			}
 			if(queries.length() > 0) {
 				queryOutput = CrudqlProcessor.process(queries, false);
 			}

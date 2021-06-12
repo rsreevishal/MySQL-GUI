@@ -2,10 +2,6 @@ package expression;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.Pattern;
-
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import antlr.CrudqlBaseVisitor;
 import antlr.CrudqlParser.AddContext;
 import antlr.CrudqlParser.ColViewAllContext;
@@ -24,7 +20,6 @@ import model.Pair;
 import model.Table;
 
 public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
-	private String exprQuery;
 	public ArrayList<String> semanticErrors;
 	public HashMap<String, String> vars;
 	private ArrayList<Table> tables;
@@ -39,21 +34,8 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 		this.createNew = _createNew;
 		this.linkedTables = _linkedTables;
 	}
-	
-	private void getQuery(ParseTree ctx) {
-		if(ctx != null) {
-			if(!Pattern.matches("\\[[\\d\\s]+\\]", ctx.toString())) {
-				exprQuery += (ctx.toString() + " ");
-			}
-			for(int i=0; i<ctx.getChildCount(); i++) {
-				getQuery(ctx.getChild(i));
-			}
-		}
-	}
 	@Override
 	public Expression visitCreateForm(CreateFormContext ctx) {
-		exprQuery = "";
-		getQuery(ctx);
 		IdToken idToken = new IdToken(ctx.ID().getText());
 		Table table = containTable(idToken);
 		if (table != null && this.createNew) {
@@ -73,18 +55,15 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 			if(inputType == InputType.LINK) {
 				linkedTables.add(new Pair<String, String>(args.get(0),args.get(1)));
 			}
-			FormInputExpr formInput = new FormInputExpr(fIdToken, inputType, args);
+			FormInputExpr formInput = new FormInputExpr(fIdToken, inputType, new ListToken(args));
 			formInputs.add(formInput);
 		}	
 		FormExpr expr = new FormExpr(idToken, formInputs);
-		expr.setQuery(exprQuery);
 		return expr;
 	}
 
 	@Override
 	public Expression visitCreateFormReport(CreateFormReportContext ctx) {
-		exprQuery = "";
-		getQuery(ctx);
 		IdToken reportIdToken = new IdToken(ctx.ID().get(0).getText());
 		IdToken tableIdToken = new IdToken(ctx.ID().get(1).getText());
 		ArrayList<ConditionExpr> conditions = new ArrayList<ConditionExpr>();
@@ -94,8 +73,7 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 			TextToken value = new TextToken(cctx.TEXT().getText().substring(1, cctx.TEXT().getText().length() - 1));
 			conditions.add(new ConditionExpr(colIdToken, value, operator));
 		}
-		CreateFormReportExpr expr = new CreateFormReportExpr(reportIdToken, tableIdToken, conditions);
-		expr.setQuery(exprQuery);
+		FormReportExpr expr = new FormReportExpr(reportIdToken, tableIdToken, conditions);
 		return expr;
 	}
 

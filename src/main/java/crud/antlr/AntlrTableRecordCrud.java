@@ -33,7 +33,6 @@ public class AntlrTableRecordCrud {
 		ArrayList<TableRecordField> tableRecordFields = new ArrayList<TableRecordField>();
 		// add if all values are provided expect PRIMARY_KEY
 		if (table.getFields().size() - 1 == expr.listToken.values.size()) {
-			String values = "";
 			int valCounter = 0;
 			for (int i = 0; i < table.getFields().size(); i++) {
 				// skip PRIMARY_KEY
@@ -42,18 +41,14 @@ public class AntlrTableRecordCrud {
 					tableRecordField.setFieldName(table.getFields().get(i).getName());
 					tableRecordField.setFieldType(table.getFields().get(i).getFieldType());
 					String value = expr.listToken.values.get(valCounter);
-					values += (value + ",");
-					tableRecordField.setFieldValue(value.substring(1, value.length() - 1)); // remove ' ' from start and
-																							// end
+					tableRecordField.setFieldValue(value.substring(1, value.length() - 1)); // remove ' ' from start and end
 					tableRecordFields.add(tableRecordField);
 					valCounter += 1;
 				}
 			}
 			tableRecord.setFields(tableRecordFields);
 			tableRecordCrud.create(tableRecord);
-			return String.format(
-					"<p><span style='color: #4287f5;'>Record: %s </span> <span style='color: green;'>inserted</span> successfully!</p>",
-					values);
+			return expr.toHTML();
 		}
 		return "<p style='color:red;'>Can't able to insert record</p>";
 	}
@@ -85,9 +80,7 @@ public class AntlrTableRecordCrud {
 			}
 			tableRecord.setFields(tableRecordFields);
 			tableRecordCrud.update(tableRecord, pk);
-			return String.format(
-					"<p><span style='color: #4287f5;'>Record: %d </span> <span style='color: green;'>updated</span> successfully!</p>",
-					expr.uListToken.uidToken.uid);
+			return expr.toHTML();
 		}
 		return "<p style='color: red;'>Can't able to insert record<p>";
 	}
@@ -105,51 +98,20 @@ public class AntlrTableRecordCrud {
 			}
 		}
 		tableRecordCrud.delete(table.getName(), pk);
-		return String.format(
-				"<p><span style='color: #4287f5;'>Record: %d </span> <span style='color: red;'>deleted</span> successfully!</p>",
-				expr.uidToken.uid);
+		return expr.toHTML();
 	}
 
 	public String viewAll(ViewAllExpr expr) {
 		Table table = tableCrud.get(expr.idToken.id);
 		ArrayList<TableRecord> records = tableRecordCrud.getAll(table);
-		if (records.size() > 0) {
-			String heading = "", values = "";
-			for (TableRecordField trf : records.get(0).getFields()) {
-				heading += String.format("<th scope='cols'>%s</th>", trf.getFieldName());
-			}
-			for (TableRecord record : records) {
-				String row = "";
-				for (TableRecordField trf : record.getFields()) {
-					row += String.format("<td>%s</td>", trf.getFieldValue());
-				}
-				values += String.format("<tr>%s</tr>", row);
-			}
-			String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
-			return tableStr;
-		}
-		return "<p style='color: red;'>No records<p>";
+		expr.setRecords(records);
+		return expr.toHTML();
 	}
 
 	public String viewAll(ColViewAllExpr expr) {
-		Table table = tableCrud.get(expr.idToken.id);
-		ArrayList<TableRecord> records = tableRecordCrud.getAll(table, expr.colToken.id);
-		if (records.size() > 0) {
-			String heading = "", values = "";
-			for (TableRecordField trf : records.get(0).getFields()) {
-				heading += String.format("<th scope='cols'>%s</th>", trf.getFieldName());
-			}
-			for (TableRecord record : records) {
-				String row = "";
-				for (TableRecordField trf : record.getFields()) {
-					row += String.format("<td>%s</td>", trf.getFieldValue());
-				}
-				values += String.format("<tr>%s</tr>", row);
-			}
-			String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
-			return tableStr;
-		}
-		return "<p style='color: red;'>No records<p>";
+		ArrayList<TableRecord> records = tableRecordCrud.getAll(expr.idToken.id, expr.colToken.id);
+		expr.setRecords(records);
+		return expr.toHTML();
 	}
 
 	public String view(ViewExpr expr) {
@@ -165,18 +127,8 @@ public class AntlrTableRecordCrud {
 			}
 		}
 		TableRecord record = tableRecordCrud.get(table, pk);
-		String heading = "", values = "";
-		for (TableRecordField trf : record.getFields()) {
-			heading += String.format("<th scope='cols'>%s</th>", trf.getFieldName());
-		}
-		String row = "";
-		for (TableRecordField trf : record.getFields()) {
-			row += String.format("<td>%s</td>", trf.getFieldValue());
-		}
-		values += String.format("<tr>%s</tr>", row);
-
-		String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
-		return tableStr;
+		expr.setRecord(record);
+		return expr.toHTML();
 	}
 
 	public String view(ColViewExpr expr) {
@@ -192,18 +144,8 @@ public class AntlrTableRecordCrud {
 			}
 		}
 		TableRecord record = tableRecordCrud.get(table, pk, expr.colToken.id);
-		String heading = "", values = "";
-		for (TableRecordField trf : record.getFields()) {
-			heading += String.format("<th scope='cols'>%s</th>", trf.getFieldName());
-		}
-		String row = "";
-		for (TableRecordField trf : record.getFields()) {
-			row += String.format("<td>%s</td>", trf.getFieldValue());
-		}
-		values += String.format("<tr>%s</tr>", row);
-
-		String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
-		return tableStr;
+		expr.setRecord(record);
+		return expr.toHTML();
 	}
 
 	public String getValue(StoreColViewExpr expr) {
@@ -237,12 +179,14 @@ public class AntlrTableRecordCrud {
 			Field field = new Field();
 			field.setName(fie.idToken.id);
 			if(fie.inputType == InputType.LINK) {
-				Field originalField = tableCrud.getField(fie.args.get(0), fie.args.get(1));
+				Field originalField = tableCrud.getField(fie.args.values.get(0), fie.args.values.get(1));
 				if(originalField != null) {
 					field.setFieldType(originalField.getFieldType());
 					field.setFieldConstraint(originalField.getFieldConstraint());
+					fie.setLinkedValues(tableRecordCrud.getAllValues(fie.args.values.get(0), fie.args.values.get(1)));
 				} else {
-					field.setFieldType(FieldType.VARCHAR);			
+					field.setFieldType(FieldType.VARCHAR);
+					fie.setLinkedValues(new ArrayList<String>());
 				}
 			} else {
 				field.setFieldType(FieldType.fromInputType(fie.inputType));
@@ -258,108 +202,22 @@ public class AntlrTableRecordCrud {
 			 result = tableCrud.create(table);
 			 tableCrud.saveFormQuery(result.getId(), expr);
 		}
-		String form = formExprToHTMLForm(expr, result);
+		String form = expr.toHTML();
 		return form;
 	}
-
-	public String formExprToHTMLForm(FormExpr expr, Table table) {
-		String inputs = "";
-		int cbCount = 0;
-		System.out.println(String.format("Input size: %d, Field size: %d", expr.formInputs.size(), table.getFields().size()));
-		for (int i=0; i<expr.formInputs.size(); i++) {
-			FormInputExpr fie = expr.formInputs.get(i);
-			Field field = table.getFields().get(i+1); // skipping PRIMARY_KEY;
-			String formGroup = "";
-			formGroup += String.format("<input type='hidden' name='fieldName' value='%s'/><input type='hidden' name='fieldType' value='%s' />",
-					field.getName(), field.getFieldType().toString());
-			switch (fie.inputType) {
-			case EMAIL:
-			case PASSWORD:
-			case TEXT: {
-				formGroup += String.format("<label>%s</label>", fie.idToken.id);
-				formGroup += String.format(
-						"<input class='form-control' type='%s' minlength='%s' maxlength='%s' name='fieldValue' required/>",
-						fie.inputType.toString().toLowerCase(), fie.args.get(0), fie.args.get(1), fie.idToken.id);
-				break;
-			}
-			case TEXTAREA: {
-				formGroup += String.format("<label>%s</label>", fie.idToken.id);
-				formGroup += String.format(
-						"<textarea class='form-control' minlength='%s' maxlength='%s' name='fieldValue' required></textarea>",
-						fie.args.get(0), fie.args.get(1), fie.idToken.id);
-				break;
-			}
-			case LINK: {
-				formGroup += String.format("<label>%s</label>", fie.idToken.id);
-				ArrayList<TableRecord> records = tableRecordCrud.getAll(tableCrud.get(fie.args.get(0)), fie.args.get(1));
-				String options = "";
-				for(TableRecord record: records) {
-					for(TableRecordField trf: record.getFields()) {
-						options += String.format("<option value='%s'>%s</option>", trf.getFieldValue(), trf.getFieldValue());
-					}
-				}
-				formGroup += String.format("<select class='form-control' name='fieldValue' required>%s</select>", options);
-				break;
-			}
-			case CHECKBOX: {
-				for(String val: fie.args) {
-					formGroup += String.format("<input type='%s' name='fieldValue' value='cb%d_%s' />",
-							fie.inputType.toString().toLowerCase(), cbCount, val);
-					formGroup += String.format("<label>%s</label>", val);
-				}
-				cbCount += 1;
-				break;
-			}
-			case RADIO: {
-				for(String val: fie.args) {
-					formGroup += String.format("<input type='%s' name='radio%d' value='%s'/>",
-							fie.inputType.toString().toLowerCase(), i, val);
-					formGroup += String.format("<label>%s</label>", val);
-				}
-				break;
-			}
-			case NUMBER: {
-				formGroup += String.format("<label>%s</label>", fie.idToken.id);
-				formGroup += String.format(
-						"<input class='form-control' type='%s' min='%s' max='%s' name='fieldValue' required/>",
-						fie.inputType.toString().toLowerCase(), fie.args.get(0), fie.args.get(1), fie.idToken.id);
-				break;
-			}
-			default: {}
-			}
-			inputs += String.format("<div class='form-group'>%s</div>", formGroup);
-		}
-		return String.format("<form class='form' id='table_form' method='post' action='/mysqlgui/InsertTableRecord'><h3>%s</h3><input type='hidden' name='tab' value='tab2'/><input type='hidden' name='tablename' value='%s'/>%s<button class='btn btn-success' type='submit'>Insert record</button></form>",
-				expr.idToken.id, table.getName(), inputs);
-	}
 	
-	public String createReport(CreateFormReportExpr expr, boolean createNew) {
+	public String createReport(FormReportExpr expr, boolean createNew) {
 		Table table = tableCrud.get(expr.table.id);
 		if(createNew) {
 			tableCrud.saveFormQuery(table.getId(), expr);
 		}
 		ArrayList<TableRecord> records = tableRecordCrud.getAll(table);
 		records = filter(records, expr);
-		String result = "<p style='color: red;'>No records<p>";
-		if (records.size() > 0) {
-			String heading = "", values = "";
-			for (TableRecordField trf : records.get(0).getFields()) {
-				heading += String.format("<th scope='cols'>%s</th>", trf.getFieldName());
-			}
-			for (TableRecord record : records) {
-				String row = "";
-				for (TableRecordField trf : record.getFields()) {
-					row += String.format("<td>%s</td>", trf.getFieldValue());
-				}
-				values += String.format("<tr>%s</tr>", row);
-			}
-			String tableStr = String.format("<table class='table'><tr>%s</tr>%s</table>", heading, values);
-			result = tableStr;
-		}
-		return result;
+		expr.setRecords(records);
+		return expr.toHTML();
 	}
 	
-	public ArrayList<TableRecord> filter(ArrayList<TableRecord> record, CreateFormReportExpr expr) {
+	public ArrayList<TableRecord> filter(ArrayList<TableRecord> record, FormReportExpr expr) {
 		ArrayList<Condition> conditions = new ArrayList<Condition>();
 		for(ConditionExpr condition: expr.conditions) {
 			if(condition.operatorExpr.operator.equals("=")) {

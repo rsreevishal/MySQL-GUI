@@ -1,8 +1,9 @@
 package ftl_templates;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Map;
+import java.util.HashMap;
 
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
@@ -13,12 +14,12 @@ import freemarker.template.TemplateNotFoundException;
 import freemarker.template.Version;
 
 public class FTLConvertor {
-	public static String convert(Map<String, Object> data, String template_path) {
+	public static String convert(HashMap<String, Object> data, String templateString) {
 		Configuration cfg = new Configuration(new Version("2.3.31"));
 		cfg.setClassForTemplateLoading(FTLConvertor.class, "/");
 		cfg.setDefaultEncoding("UTF-8");
 		try {
-			Template template = cfg.getTemplate(template_path);
+			Template template = new Template("template", new StringReader(templateString), cfg);
 			StringWriter out = new StringWriter();
 			template.process(data, out);
 			String queries = out.getBuffer().toString();

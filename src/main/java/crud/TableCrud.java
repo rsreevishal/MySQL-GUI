@@ -6,21 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import core.DBConnector;
 import crud.orm.TableORM;
 import expression.ConditionExpr;
-import expression.CreateFormReportExpr;
+import expression.FormReportExpr;
 import expression.FormExpr;
 import expression.FormInputExpr;
-import model.ExportModel;
 import model.Field;
 import model.FieldConstraint;
 import model.FieldType;
-import model.Form;
-import model.FormInput;
-import model.Report;
 import model.Table;
 import model.TableQueryType;
 
@@ -64,48 +59,6 @@ public class TableCrud {
 			e.printStackTrace();
 		}
 		return null;
-	}
-	
-	public ExportModel getApp() {
-		try {
-			HashMap<Integer, Form> forms = new HashMap<Integer, Form>();
-			HashMap<Integer, Report> reports = new HashMap<Integer, Report>();
-			PreparedStatement st = sqlConnection.prepareStatement("select fi.type, fi.table_id, t.tablename, fi.name, fi.field, fi.link, fi.args from mysqlgui_form_inputs as fi join mysqlgui_tables as t on fi.table_id = t.id;");
-			ResultSet rs = st.executeQuery();
-			while(rs.next()) {
-				TableQueryType type = TableQueryType.valueOf(rs.getString(1));
-				switch(type) {
-				case FORM: {
-					int pk = rs.getInt(2);
-					if(!forms.containsKey(pk)) {
-						Form form = new Form();
-						form.setName(rs.getString(3));
-						forms.put(pk, form);
-					}
-					forms.get(pk).addInput(new FormInput(rs.getString(5), rs.getString(6), rs.getString(7)));
-					break;
-				}
-				case VIEW: {
-					int pk = rs.getInt(2);
-					if(!reports.containsKey(pk)) {
-						Report report = new Report();
-						report.setTable(rs.getString(3));
-						report.setName(rs.getString(4));
-						reports.put(pk, report);
-					}
-					reports.get(pk).addInput(new FormInput(rs.getString(5), rs.getString(6), rs.getString(7)));
-					break;
-				}
-				}
-			}
-			ExportModel result = new ExportModel();
-			result.setForms(new ArrayList<Form>(forms.values()));
-			result.setReports(new ArrayList<Report>(reports.values()));
-			return result;
-		} catch(SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 	
 	public void delete(String tablename, int id) {
@@ -213,7 +166,7 @@ public class TableCrud {
 				st.setString(2, fie.idToken.id);
 				st.setString(3, fie.inputType.toString());
 				String args = "";
-				for(String arg: fie.args) {
+				for(String arg: fie.args.values) {
 					args += String.format(",'%s'", arg);
 				}
 				st.setString(4, args.substring(1));
@@ -226,7 +179,7 @@ public class TableCrud {
 		}
 	}
 	
-	public void saveFormQuery(int table_id, CreateFormReportExpr expr) {
+	public void saveFormQuery(int table_id, FormReportExpr expr) {
 		try {
 			for(ConditionExpr ce : expr.conditions) {
 				PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_form_inputs(table_id, field, link, args, type, name) values(?, ?, ?, ?, ?, ?);");
