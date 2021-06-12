@@ -47,6 +47,12 @@
 					<a class="list-group-item list-group-item-action" href="/mysqlgui/Crudql">Execute query</a>
 				</div>
 			</li>
+			<li class="list-group-item">
+				<h2>Form Builder</h2>
+				<div class="list-group list-group-flush">
+					<a class="list-group-item list-group-item-action" href="/mysqlgui/FormBuilder">Build a from</a>
+				</div>
+			</li>
 		</ul>
 	</div>
 </body>

@@ -94,6 +94,12 @@
   	<description></description>
   	<servlet-class>controller.crudql.ImportQuery</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>FormBuilder</servlet-name>
+  	<display-name>FormBuilder</display-name>
+  	<description></description>
+  	<servlet-class>controller.FormBuilder</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>Index</servlet-name>
   	<url-pattern>/</url-pattern>
@@ -153,5 +159,9 @@
   <servlet-mapping>
   	<servlet-name>ImportQuery</servlet-name>
   	<url-pattern>/ImportQuery</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>FormBuilder</servlet-name>
+  	<url-pattern>/FormBuilder</url-pattern>
   </servlet-mapping>
 </web-app>
