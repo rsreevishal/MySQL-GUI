@@ -16,7 +16,7 @@
 		<p>This page indicates something bad happened in server</p>
 		<h3>Things you can make sure</h3>
 		<ul class="list-group">
-			<li class="list-group-item">Check your login credentials</li>
+			<li class="list-group-item">Check your login credentials and try <a href="/mysqlgui/Index">login</a> again!</li>
 		</ul>
 	</div>
 </body>
