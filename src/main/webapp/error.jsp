@@ -10,6 +10,14 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
 </head>
 <body>
-	<h1>Error page</h1>
+	<div class="container text-center">
+		<h1 class="display-4">Error</h1>
+		<hr class="my-4">
+		<p>This page indicates something bad happened in server</p>
+		<h3>Things you can make sure</h3>
+		<ul class="list-group">
+			<li class="list-group-item">Check your login credentials</li>
+		</ul>
+	</div>
 </body>
 </html>

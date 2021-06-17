@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Table {
 	private int id;
+	private User user;
 	private String name;
 	ArrayList<Field> fields;
 	
@@ -24,5 +25,11 @@ public class Table {
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

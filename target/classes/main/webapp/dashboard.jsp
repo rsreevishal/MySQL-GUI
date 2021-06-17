@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page isELIgnored="false" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,6 +22,10 @@
 <body>
 	<div class="container text-center">
 		<h1 class="display-4">DashBoard</h1>
+		<c:if test="${user != null}">
+			<h3>Welcome, ${user.getUsername()}!</h3>
+		</c:if>
+		<a href="/mysqlgui/Logout" class="btn btn-danger" role="button">Logout</a>
 		<hr class="my-4">
 		<ul class="list-group">
 			<li class="list-group-item">

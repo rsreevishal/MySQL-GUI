@@ -15,6 +15,7 @@ import expression.IdToken;
 import expression.InputType;
 import expression.ListToken;
 import model.TableQueryType;
+import model.User;
 
 public class FormCrud {
 	private DBConnector dbConnector;
@@ -25,11 +26,12 @@ public class FormCrud {
 		sqlConnection = dbConnector.getSqlConnection();
 	}
 
-	ArrayList<FormExpr> getAll() {
+	ArrayList<FormExpr> getAll(User user) {
 		try {
 			HashMap<Integer, FormExpr> forms = new HashMap<Integer, FormExpr>();
 			PreparedStatement st = sqlConnection.prepareStatement(
-					"select fi.type, fi.table_id, t.tablename, fi.name, fi.field, fi.link, fi.args from mysqlgui_form_inputs as fi join mysqlgui_tables as t on fi.table_id = t.id;");
+					"select fi.type, fi.table_id, t.tablename, fi.name, fi.field, fi.link, fi.args from mysqlgui_form_inputs as fi join mysqlgui_tables as t on fi.table_id = t.id where t.user=?;");
+			st.setInt(1, user.getId());
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				TableQueryType type = TableQueryType.valueOf(rs.getString(1));

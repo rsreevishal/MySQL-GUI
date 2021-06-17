@@ -14,6 +14,7 @@ import expression.IdToken;
 import expression.OperatorExpr;
 import expression.TextToken;
 import model.TableQueryType;
+import model.User;
 
 public class FormReportCrud {
 	private DBConnector dbConnector;
@@ -24,11 +25,12 @@ public class FormReportCrud {
 		sqlConnection = dbConnector.getSqlConnection();
 	}
 
-	ArrayList<FormReportExpr> getAll() {
+	ArrayList<FormReportExpr> getAll(User user) {
 		try {
 			HashMap<Integer, FormReportExpr> reports = new HashMap<Integer, FormReportExpr>();
 			PreparedStatement st = sqlConnection.prepareStatement(
-					"select fi.type, fi.table_id, t.tablename, fi.name, fi.field, fi.link, fi.args from mysqlgui_form_inputs as fi join mysqlgui_tables as t on fi.table_id = t.id;");
+					"select fi.type, fi.table_id, t.tablename, fi.name, fi.field, fi.link, fi.args from mysqlgui_form_inputs as fi join mysqlgui_tables as t on fi.table_id = t.id where t.user=?;");
+			st.setInt(1, user.getId());
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				TableQueryType type = TableQueryType.valueOf(rs.getString(1));

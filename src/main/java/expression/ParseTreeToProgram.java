@@ -9,6 +9,7 @@ import crud.TableCrud;
 import model.Field;
 import model.Pair;
 import model.Table;
+import model.User;
 
 public class ParseTreeToProgram extends CrudqlBaseVisitor<Program> {
 	public ArrayList<String> semanticErrors;
@@ -17,11 +18,13 @@ public class ParseTreeToProgram extends CrudqlBaseVisitor<Program> {
 	private ArrayList<Pair<String, String>> linkedTables;
 	private TableCrud tableCrud;
 	private boolean createNew;
-	public ParseTreeToProgram(boolean _createNew) {
+	public User user;
+	public ParseTreeToProgram(User _user, boolean _createNew) {
 		semanticErrors = new ArrayList<String>();
 		vars = new HashMap<String, String>();
 		tableCrud = new TableCrud();
-		tables = tableCrud.getAll();
+		user = _user;
+		tables = tableCrud.getAll(user);
 		createNew = _createNew;
 		linkedTables = new ArrayList<Pair<String, String>>();
 	}
@@ -29,7 +32,7 @@ public class ParseTreeToProgram extends CrudqlBaseVisitor<Program> {
 	@Override
 	public Program visitProg(ProgContext ctx) {
 		Program program = new Program();
-		ParseTreeToExpression exprVisitor = new ParseTreeToExpression(semanticErrors, vars, tables, createNew, linkedTables);
+		ParseTreeToExpression exprVisitor = new ParseTreeToExpression(semanticErrors, vars, tables, createNew, linkedTables, user);
 		for(int i=0; i<ctx.getChildCount(); i++) {
 			if(i == ctx.getChildCount() - 1) {
 				// EOF
@@ -49,7 +52,7 @@ public class ParseTreeToProgram extends CrudqlBaseVisitor<Program> {
 				tables.putIfAbsent(expr.idToken.id, fields);
 			}
 		}
-		for(Table table: tableCrud.getAll()) {
+		for(Table table: tableCrud.getAll(user)) {
 			ArrayList<String> fields = new ArrayList<String>();
 			for(Field f: table.getFields()) {
 				fields.add(f.getName());

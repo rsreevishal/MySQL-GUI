@@ -18,6 +18,7 @@ import model.FieldConstraint;
 import model.FieldType;
 import model.Table;
 import model.TableQueryType;
+import model.User;
 
 public class TableCrud {
 	private DBConnector dbConnector;
@@ -32,8 +33,9 @@ public class TableCrud {
 	
 	public Table create(Table table) {
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_tables(tablename) values(?)", Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_tables(tablename, user) values(?, ?)", Statement.RETURN_GENERATED_KEYS);
 			st.setString(1, table.getName());
+			st.setInt(2, table.getUser().getId());
 			st.executeUpdate();
 			ResultSet rs = st.getGeneratedKeys();
 			int pk = 1;
@@ -71,9 +73,10 @@ public class TableCrud {
 			e.printStackTrace();
 		}
 	}
-	public ArrayList<Table> getAll() {
+	public ArrayList<Table> getAll(User user) {
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("select id,tablename from mysqlgui_tables;");
+			PreparedStatement st = sqlConnection.prepareStatement("select id,tablename from mysqlgui_tables where user=?;");
+			st.setInt(1, user.getId());
 			ResultSet rs = st.executeQuery();
 			ArrayList<Table> tables = new ArrayList<Table>();
 			while(rs.next()) {

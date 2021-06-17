@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ftl_templates.FTLConvertor;
+import model.User;
 
 public class FormExpr extends Expression {
+	private User user;
 	public IdToken idToken;
 	public ArrayList<FormInputExpr> formInputs;
 	public FormExpr() {}
@@ -43,5 +45,11 @@ public class FormExpr extends Expression {
 		data.put("inputs", inputs);
 		String result = FTLConvertor.convert(data, "CREATE FORM ${table} [ <#list inputs as input>${input} </#list> ]");
 		return result;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

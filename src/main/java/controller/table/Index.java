@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import crud.CookieCrud;
 import crud.TableCrud;
 import model.Field;
 import model.FieldConstraint;
@@ -17,12 +18,17 @@ import model.Table;
 public class Index extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TableCrud tableCrud;
+	private CookieCrud cookieCrud;
     public Index() {
         super();
         tableCrud = new TableCrud();
+        cookieCrud = new CookieCrud();
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if(cookieCrud.getSessionUser(request) == null) {
+			request.getRequestDispatcher("error.jsp").forward(request, response);
+		}
 		RequestDispatcher rd = request.getRequestDispatcher("create_table.jsp");
 		rd.forward(request, response);
 	}
@@ -48,6 +54,7 @@ public class Index extends HttpServlet {
 			fields.add(field);
 		}
 		table.setFields(fields);
+		table.setUser(cookieCrud.getSessionUser(request));
 		table = tableCrud.create(table);
 		request.setAttribute("table", table);
 		request.setAttribute("tableid", table.getId());

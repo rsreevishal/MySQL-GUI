@@ -1,6 +1,7 @@
 package crud;
 
 import model.ExportModel;
+import model.User;
 
 public class ExportCrud {
 	private FormCrud formCrud;
@@ -11,10 +12,10 @@ public class ExportCrud {
 		formReportCrud = new FormReportCrud();
 	}
 	
-	public ExportModel exportApp() {
+	public ExportModel exportApp(User user) {
 		ExportModel model = new ExportModel();
-		model.setForms(formCrud.getAll());
-		model.setReports(formReportCrud.getAll());
+		model.setForms(formCrud.getAll(user));
+		model.setReports(formReportCrud.getAll(user));
 		return model;
 	}
 }

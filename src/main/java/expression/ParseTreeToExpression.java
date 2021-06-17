@@ -18,6 +18,7 @@ import antlr.CrudqlParser.ViewContext;
 import model.Field;
 import model.Pair;
 import model.Table;
+import model.User;
 
 public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 	public ArrayList<String> semanticErrors;
@@ -25,14 +26,16 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 	private ArrayList<Table> tables;
 	private boolean createNew;
 	private ArrayList<Pair<String, String>> linkedTables;
+	public User user;
 
 	public ParseTreeToExpression(ArrayList<String> semanticErrors, HashMap<String, String> vars,
-			ArrayList<Table> tables, boolean _createNew, ArrayList<Pair<String, String>> _linkedTables) {
+			ArrayList<Table> tables, boolean _createNew, ArrayList<Pair<String, String>> _linkedTables, User _user) {
 		this.semanticErrors = semanticErrors;
 		this.tables = tables;
 		this.vars = vars;
 		this.createNew = _createNew;
 		this.linkedTables = _linkedTables;
+		this.user = _user;
 	}
 	@Override
 	public Expression visitCreateForm(CreateFormContext ctx) {
@@ -59,6 +62,7 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 			formInputs.add(formInput);
 		}	
 		FormExpr expr = new FormExpr(idToken, formInputs);
+		expr.setUser(user);
 		return expr;
 	}
 

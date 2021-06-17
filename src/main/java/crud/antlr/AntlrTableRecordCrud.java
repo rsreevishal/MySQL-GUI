@@ -199,6 +199,7 @@ public class AntlrTableRecordCrud {
 		table.setFields(fields);
 		Table result = table;
 		if(createNew) {
+			 table.setUser(expr.getUser());
 			 result = tableCrud.create(table);
 			 tableCrud.saveFormQuery(result.getId(), expr);
 		}

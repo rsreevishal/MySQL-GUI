@@ -1,6 +1,5 @@
 package crud;
 import java.sql.*;
-
 import core.DBConnector;
 import model.User;
 
@@ -14,18 +13,20 @@ public class UserCrud {
 	
 	public User authenticateUser(String username, String password){
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("select * from mysqlgui_users where username = ? and password = ?");
+			PreparedStatement st = sqlConnection.prepareStatement("select id,username,password from mysqlgui_users where username = ? and password = ?");
 			st.setString(1, username);
 			st.setString(2, password);
 			ResultSet rs = st.executeQuery();
 			if(rs.next()) {
 				User user = new User();
-				user.setUsername(username);
-				user.setPassword(password);
+				user.setId(rs.getInt(1));
+				user.setUsername(rs.getString(2));
+				user.setPassword(rs.getString(3));
 				return user;
+			} else {
+				return null;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -39,5 +40,25 @@ public class UserCrud {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public User get(int id) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("select id,username,password from mysqlgui_users where id = ?;");
+			st.setInt(1, id);
+			ResultSet rs = st.executeQuery();
+			if(rs.next()) {
+				User user = new User();
+				user.setId(rs.getInt(1));
+				user.setUsername(rs.getString(2));
+				user.setPassword(rs.getString(3));
+				return user;
+			} else {
+				return null;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

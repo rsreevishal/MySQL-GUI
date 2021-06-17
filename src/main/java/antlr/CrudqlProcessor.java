@@ -6,9 +6,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import crud.antlr.AntlrTableRecordCrud;
 import expression.*;
+import model.User;
 
 public class CrudqlProcessor {
-	public static String process(String expressions, boolean createNew) {
+	public static String process(String expressions,User user, boolean createNew) {
 		CrudqlParser parser = getParser(expressions);
 		AntlrTableRecordCrud antlrRecordCrud = new AntlrTableRecordCrud();
 		// Tell ANTLR to build a parse tree
@@ -20,7 +21,7 @@ public class CrudqlProcessor {
 			return CrudqlErrorListener.errorMsg;
 		} else {
 			// Create a visitor for converting the parse tree into Program/Expression object
-			ParseTreeToProgram progVisitor = new ParseTreeToProgram(createNew);
+			ParseTreeToProgram progVisitor = new ParseTreeToProgram(user, createNew);
 			Program prog = progVisitor.visit(antlrAST);
 			if(progVisitor.semanticErrors.size() > 0) {
 				String errors = "";

@@ -10,25 +10,33 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import crud.CookieCrud;
 import crud.TableCrud;
 import crud.TableRecordCrud;
 import model.FieldType;
 import model.Table;
 import model.TableRecord;
 import model.TableRecordField;
+import model.User;
 
 public class InsertTableRecord extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TableCrud tableCrud;
     private TableRecordCrud tableRecordCrud;
+    private CookieCrud cookieCrud;
     public InsertTableRecord() {
         super();
         tableCrud = new TableCrud();
         tableRecordCrud = new TableRecordCrud();
+        cookieCrud = new CookieCrud();
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ArrayList<Table> tables = tableCrud.getAll();
+		User user = cookieCrud.getSessionUser(request);
+		if(user == null) {
+			request.getRequestDispatcher("error.jsp").forward(request, response);
+		}
+		ArrayList<Table> tables = tableCrud.getAll(user);
 		request.setAttribute("tables", tables);
 		request.getRequestDispatcher("insert_table_record.jsp").forward(request, response);
 	}
