@@ -20,6 +20,6 @@ public class TextToken extends Expression {
 	public String toFTL() {
 		HashMap<String, Object> data = new HashMap<String, Object>();
 		data.put("text", text);
-		return FTLConvertor.convert(data, "${text}");
+		return FTLConvertor.convert(this, data);
 	}
 }

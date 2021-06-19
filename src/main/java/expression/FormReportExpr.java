@@ -52,7 +52,7 @@ public class FormReportExpr extends Expression {
 			conditionsStr.add(expr.toFTL());
 		}
 		data.put("conditions", conditionsStr);
-		return FTLConvertor.convert(data, "CREATE VIEW ${name} FOR ${table} [ <#list conditions as condition>${condition} </#list> ]");
+		return FTLConvertor.convert(this, data);
 	}
 
 	public ArrayList<TableRecord> getRecords() {

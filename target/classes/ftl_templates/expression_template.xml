@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:expressions
+	xmlns:tns="http://www.mysqlgui.org/expression_template"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mysqlgui.org/expression_template expression_template.xsd ">
+	<tns:expression id="IdToken">
+		<tns:template>IdToken.ftl</tns:template>
+	</tns:expression>
+	<tns:expression id="FormExpr">
+		<tns:template>FormExpr.ftl</tns:template>
+	</tns:expression>
+	<tns:expression id="ListToken">
+		<tns:template>ListToken.ftl</tns:template>
+	</tns:expression>
+	<tns:expression id="FormInputExpr">
+		<tns:template>FormInputExpr.ftl</tns:template>
+	</tns:expression>
+	<tns:expression id="TextToken">
+		<tns:template>TextToken.ftl</tns:template>
+	</tns:expression>
+	<tns:expression id="OperatorExpr">
+		<tns:template>OperatorExpr.ftl</tns:template>
+	</tns:expression>
+	<tns:expression id="ConditionExpr">
+		<tns:template>ConditionExpr.ftl</tns:template>
+	</tns:expression>
+	<tns:expression id="FormReportExpr">
+		<tns:template>FormReportExpr.ftl</tns:template>
+	</tns:expression>
+</tns:expressions>

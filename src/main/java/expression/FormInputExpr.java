@@ -101,7 +101,7 @@ public class FormInputExpr extends Expression {
 		data.put("input", idToken.toFTL());
 		data.put("inputType", inputType.toString());
 		data.put("args", args.toFTL());
-		String result = FTLConvertor.convert(data, "${input} ${inputType} ${args}");
+		String result = FTLConvertor.convert(this, data);
 		return result;
 	}
 }

@@ -75,7 +75,7 @@ public class TableRecordCrud {
 		String query = String.format("UPDATE %s SET %s WHERE %s=%s;", record.getTablename(),
 				values.toString().substring(0, values.length() - 1),
 				key.getKey(), key.getValue());
-		System.out.print("Update query: " + query);
+		System.out.println("Update query: " + query);
 		try {
 			PreparedStatement st = sqlConnection.prepareStatement(query);
 			st.executeUpdate();
@@ -91,10 +91,9 @@ public class TableRecordCrud {
 		for (Field field : table.getFields()) {
 			fields.append(field.getName()).append(",");
 		}
-		System.out.println(fields.toString());
 		String query = String.format("SELECT %s FROM %s;", fields.toString().substring(0, fields.length() - 1),
 				table.getName());
-		System.out.println(query);
+		System.out.println("Get All Query" + query);
 		try {
 			PreparedStatement statement = sqlConnection.prepareStatement(query);
 			ResultSet resultSet = statement.executeQuery();
@@ -127,10 +126,9 @@ public class TableRecordCrud {
 		for (Field field : table.getFields()) {
 			fields.append(field.getName()).append(",");
 		}
-		System.out.println(fields.toString());
 		String query = String.format("SELECT %s FROM %s;", fields.toString().substring(0, fields.length() - 1),
 				table.getName());
-		System.out.println(query);
+		System.out.println("Get All Query" + query);
 		try {
 			PreparedStatement statement = sqlConnection.prepareStatement(query);
 			ResultSet resultSet = statement.executeQuery();
@@ -165,7 +163,7 @@ public class TableRecordCrud {
 		}
 		String query = String.format("SELECT %s FROM %s;", colName,
 				table.getName());
-		System.out.println(query);
+		System.out.println("Get All Query" + query);
 		try {
 			PreparedStatement statement = sqlConnection.prepareStatement(query);
 			ResultSet resultSet = statement.executeQuery();
@@ -214,10 +212,9 @@ public class TableRecordCrud {
 		for (Field field : table.getFields()) {
 			fields.append(field.getName()).append(",");
 		}
-		System.out.println(fields.toString());
 		String query = String.format("SELECT %s FROM %s where %s=%s;", fields.toString().substring(0, fields.length() - 1),
 				table.getName(), key.getKey(), key.getValue());
-		System.out.println(query);
+		System.out.println("Get Query" + query);
 		try {
 			PreparedStatement statement = sqlConnection.prepareStatement(query);
 			ResultSet resultSet = statement.executeQuery();
@@ -249,7 +246,7 @@ public class TableRecordCrud {
 	public TableRecord get(Table table, PrimaryKey key, String colName) {
 		TableRecord result = new TableRecord();
 		String query = String.format("SELECT %s FROM %s where %s=%s;", colName, table.getName(), key.getKey(), key.getValue());
-		System.out.println(query);
+		System.out.println("Get Query" + query);
 		try {
 			PreparedStatement statement = sqlConnection.prepareStatement(query);
 			ResultSet resultSet = statement.executeQuery();

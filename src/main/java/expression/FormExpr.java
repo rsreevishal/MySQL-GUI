@@ -32,10 +32,6 @@ public class FormExpr extends Expression {
 
 	@Override
 	public String toFTL() {
-		idToken.toFTL();
-		for(FormInputExpr fie: formInputs) {
-			fie.toFTL();
-		}
 		HashMap<String, Object> data = new HashMap<String, Object>();
 		data.put("table", idToken.toFTL());
 		ArrayList<String> inputs = new ArrayList<String>();
@@ -43,7 +39,7 @@ public class FormExpr extends Expression {
 			inputs.add(input.toFTL());
 		}
 		data.put("inputs", inputs);
-		String result = FTLConvertor.convert(data, "CREATE FORM ${table} [ <#list inputs as input>${input} </#list> ]");
+		String result = FTLConvertor.convert(this, data);
 		return result;
 	}
 	public User getUser() {

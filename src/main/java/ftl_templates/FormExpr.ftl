@@ -1,0 +1,1 @@
+CREATE FORM ${table} [ <#list inputs as input>${input} </#list> ]

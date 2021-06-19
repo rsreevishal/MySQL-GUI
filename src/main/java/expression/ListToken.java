@@ -23,7 +23,7 @@ public class ListToken extends Expression {
 		}
 		HashMap<String, Object> data = new HashMap<String, Object>();
 		data.put("args", args.substring(1));
-		String result = FTLConvertor.convert(data, "(${args})");
+		String result = FTLConvertor.convert(this, data);
 		return result;
 	}
 }

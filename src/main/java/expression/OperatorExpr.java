@@ -20,6 +20,6 @@ public class OperatorExpr extends Expression {
 	public String toFTL() {
 		HashMap<String, Object> data = new HashMap<String, Object>();
 		data.put("operator", operator);
-		return FTLConvertor.convert(data, "${operator}");
+		return FTLConvertor.convert(this, data);
 	}
 }

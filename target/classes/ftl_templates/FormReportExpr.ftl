@@ -1,0 +1,1 @@
+CREATE VIEW ${name} FOR ${table} [ <#list conditions as condition>${condition} </#list> ]

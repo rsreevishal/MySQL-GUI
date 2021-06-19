@@ -26,6 +26,6 @@ public class ConditionExpr extends Expression {
 		data.put("colName", colName.toFTL());
 		data.put("colValue", colValue.toFTL());
 		data.put("operator", operatorExpr.toFTL());
-		return FTLConvertor.convert(data, "${colName} ${operator} ${colValue}");
+		return FTLConvertor.convert(this, data);
 	}
 }

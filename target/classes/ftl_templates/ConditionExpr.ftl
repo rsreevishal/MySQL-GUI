@@ -1,0 +1,1 @@
+${colName} ${operator} ${colValue}

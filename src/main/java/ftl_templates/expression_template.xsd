@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+	targetNamespace="http://www.mysqlgui.org/expression_template"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.mysqlgui.org/expression_template">
+	<element name="expressions">
+		<complexType>
+			<sequence>
+				<element name="expression" maxOccurs="unbounded" minOccurs="1">
+					<complexType>
+						<sequence>
+							<element name="template" minOccurs="1" maxOccurs="1">
+								<simpleType>
+								 <restriction base="string">
+								 </restriction>
+								</simpleType>
+							</element>
+						</sequence>
+						<attribute name="id" type="ID"></attribute>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+</schema>

@@ -20,7 +20,7 @@ public class IdToken extends Expression {
 	public String toFTL() {
 		HashMap<String, Object> data = new HashMap<String, Object>();
 		data.put("id", id);
-		String result = FTLConvertor.convert(data, "${id}");
+		String result = FTLConvertor.convert(this, data);
 		return result;
 	}
 }
