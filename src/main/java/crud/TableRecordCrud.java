@@ -13,6 +13,7 @@ import model.PrimaryKey;
 import model.Table;
 import model.TableRecord;
 import model.TableRecordField;
+import model.User;
 
 public class TableRecordCrud {
 	private DBConnector dbConnector;
@@ -84,9 +85,9 @@ public class TableRecordCrud {
 		}	
 	}
 	
-	public ArrayList<TableRecord> getAll(String tablename) {
+	public ArrayList<TableRecord> getAll(String tablename, User user) {
 		ArrayList<TableRecord> result = new ArrayList<TableRecord>();
-		Table table = tableCrud.get(tablename);
+		Table table = tableCrud.get(tablename, user);
 		StringBuilder fields = new StringBuilder("");
 		for (Field field : table.getFields()) {
 			fields.append(field.getName()).append(",");
@@ -123,6 +124,7 @@ public class TableRecordCrud {
 	public ArrayList<TableRecord> getAll(Table table) {
 		ArrayList<TableRecord> result = new ArrayList<TableRecord>();
 		StringBuilder fields = new StringBuilder("");
+		System.out.println("Table field count: " + table.getFields().size());
 		for (Field field : table.getFields()) {
 			fields.append(field.getName()).append(",");
 		}
@@ -155,8 +157,8 @@ public class TableRecordCrud {
 		return result;
 	}
 	
-	public ArrayList<TableRecord> getAll(String tablename, String colName) {
-		Table table = tableCrud.get(tablename);
+	public ArrayList<TableRecord> getAll(String tablename, User user, String colName) {
+		Table table = tableCrud.get(tablename, user);
 		ArrayList<TableRecord> result = new ArrayList<TableRecord>();
 		if(table == null) {
 			return result;
@@ -193,8 +195,8 @@ public class TableRecordCrud {
 		return result;
 	}
 	
-	public ArrayList<String> getAllValues(String tablename, String colName) {
-		ArrayList<TableRecord> records = getAll(tablename, colName);
+	public ArrayList<String> getAllValues(String tablename, User user, String colName) {
+		ArrayList<TableRecord> records = getAll(tablename, user, colName);
 		ArrayList<String> output = new ArrayList<String>();
 		for(TableRecord record: records) {
 			for(TableRecordField field: record.getFields()) {

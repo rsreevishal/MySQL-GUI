@@ -124,10 +124,11 @@ public class TableCrud {
 		return null;
 	}
 	
-	public Table get(String tableName) {
+	public Table get(String tableName, User user) {
 		try {
-			PreparedStatement st = sqlConnection.prepareStatement("select id,tablename from mysqlgui_tables where tablename=?;");
+			PreparedStatement st = sqlConnection.prepareStatement("select id,tablename from mysqlgui_tables where tablename=? and user=?;");
 			st.setString(1, tableName);
+			st.setInt(2, user.getId());
 			ResultSet rs = st.executeQuery();
 			Table table = new Table();
 			if(rs.next()) {
@@ -199,8 +200,8 @@ public class TableCrud {
 		}
 	}
 	
-	public Field getField(String tablename, String field) {
-		Table table = this.get(tablename);
+	public Field getField(String tablename, User user, String field) {
+		Table table = this.get(tablename, user);
 		if(table != null) {
 			for(Field f: table.getFields()) {
 				if(f.getName().equals(field)) {

@@ -11,6 +11,7 @@ import model.PrimaryKey;
 import model.Table;
 import model.TableRecord;
 import model.TableRecordField;
+import model.User;
 import model.filters.Condition;
 import model.filters.EqualsCondition;
 import model.filters.GreaterThanCondition;
@@ -20,16 +21,17 @@ import model.filters.LesserThanCondition;
 public class AntlrTableRecordCrud {
 	private TableCrud tableCrud;
 	private TableRecordCrud tableRecordCrud;
-
-	public AntlrTableRecordCrud() {
+	private User user;
+	public AntlrTableRecordCrud(User _user) {
 		tableCrud = new TableCrud();
 		tableRecordCrud = new TableRecordCrud();
+		user = _user;
 	}
 
 	public String create(AddExpr expr) {
 		TableRecord tableRecord = new TableRecord();
 		tableRecord.setTablename(expr.idToken.id);
-		Table table = tableCrud.get(expr.idToken.id);
+		Table table = tableCrud.get(expr.idToken.id, user);
 		ArrayList<TableRecordField> tableRecordFields = new ArrayList<TableRecordField>();
 		// add if all values are provided expect PRIMARY_KEY
 		if (table.getFields().size() - 1 == expr.listToken.values.size()) {
@@ -56,7 +58,7 @@ public class AntlrTableRecordCrud {
 	public String update(UpdateExpr expr) {
 		TableRecord tableRecord = new TableRecord();
 		tableRecord.setTablename(expr.idToken.id);
-		Table table = tableCrud.get(expr.idToken.id);
+		Table table = tableCrud.get(expr.idToken.id, user);
 		ArrayList<TableRecordField> tableRecordFields = new ArrayList<TableRecordField>();
 		// add if all values are provided expect PRIMARY_KEY
 		if (table.getFields().size() - 1 == expr.uListToken.values.size()) {
@@ -86,7 +88,7 @@ public class AntlrTableRecordCrud {
 	}
 
 	public String delete(DeleteExpr expr) {
-		Table table = tableCrud.get(expr.idToken.id);
+		Table table = tableCrud.get(expr.idToken.id, user);
 		String pKey;
 		PrimaryKey pk = new PrimaryKey();
 		for (Field f : table.getFields()) {
@@ -102,20 +104,20 @@ public class AntlrTableRecordCrud {
 	}
 
 	public String viewAll(ViewAllExpr expr) {
-		Table table = tableCrud.get(expr.idToken.id);
+		Table table = tableCrud.get(expr.idToken.id, user);
 		ArrayList<TableRecord> records = tableRecordCrud.getAll(table);
 		expr.setRecords(records);
 		return expr.toHTML();
 	}
 
 	public String viewAll(ColViewAllExpr expr) {
-		ArrayList<TableRecord> records = tableRecordCrud.getAll(expr.idToken.id, expr.colToken.id);
+		ArrayList<TableRecord> records = tableRecordCrud.getAll(expr.idToken.id, user, expr.colToken.id);
 		expr.setRecords(records);
 		return expr.toHTML();
 	}
 
 	public String view(ViewExpr expr) {
-		Table table = tableCrud.get(expr.idToken.id);
+		Table table = tableCrud.get(expr.idToken.id, user);
 		String pKey;
 		PrimaryKey pk = new PrimaryKey();
 		for (Field f : table.getFields()) {
@@ -132,7 +134,7 @@ public class AntlrTableRecordCrud {
 	}
 
 	public String view(ColViewExpr expr) {
-		Table table = tableCrud.get(expr.idToken.id);
+		Table table = tableCrud.get(expr.idToken.id, user);
 		String pKey;
 		PrimaryKey pk = new PrimaryKey();
 		for (Field f : table.getFields()) {
@@ -149,7 +151,7 @@ public class AntlrTableRecordCrud {
 	}
 
 	public String getValue(StoreColViewExpr expr) {
-		Table table = tableCrud.get(expr.colViewExpr.idToken.id);
+		Table table = tableCrud.get(expr.colViewExpr.idToken.id, user);
 		String pKey;
 		PrimaryKey pk = new PrimaryKey();
 		for (Field f : table.getFields()) {
@@ -179,11 +181,11 @@ public class AntlrTableRecordCrud {
 			Field field = new Field();
 			field.setName(fie.idToken.id);
 			if(fie.inputType == InputType.LINK) {
-				Field originalField = tableCrud.getField(fie.args.values.get(0), fie.args.values.get(1));
+				Field originalField = tableCrud.getField(fie.args.values.get(0), user, fie.args.values.get(1));
 				if(originalField != null) {
 					field.setFieldType(originalField.getFieldType());
 					field.setFieldConstraint(originalField.getFieldConstraint());
-					fie.setLinkedValues(tableRecordCrud.getAllValues(fie.args.values.get(0), fie.args.values.get(1)));
+					fie.setLinkedValues(tableRecordCrud.getAllValues(fie.args.values.get(0), user, fie.args.values.get(1)));
 				} else {
 					field.setFieldType(FieldType.VARCHAR);
 					fie.setLinkedValues(new ArrayList<String>());
@@ -208,7 +210,7 @@ public class AntlrTableRecordCrud {
 	}
 	
 	public String createReport(FormReportExpr expr, boolean createNew) {
-		Table table = tableCrud.get(expr.table.id);
+		Table table = tableCrud.get(expr.table.id, user);
 		if(createNew) {
 			tableCrud.saveFormQuery(table.getId(), expr);
 		}

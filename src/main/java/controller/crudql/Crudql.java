@@ -10,8 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 import antlr.CrudqlProcessor;
 import crud.CookieCrud;
 import crud.ExportCrud;
+import crud.TableCrud;
+import exception_handler.SemanticExceptionHandler;
+import expression.CrudqlErrorListener;
 import expression.FormExpr;
 import expression.FormReportExpr;
+import expression.Program;
 import model.ExportModel;
 import model.User;
 
@@ -19,10 +23,12 @@ public class Crudql extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ExportCrud exportCrud;
 	private CookieCrud cookieCrud;
+	private TableCrud tableCrud;
     public Crudql() {
         super();
     	exportCrud = new ExportCrud();
     	cookieCrud = new CookieCrud();
+    	tableCrud = new TableCrud();
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -41,7 +47,16 @@ public class Crudql extends HttpServlet {
 				queries += (report.toFTL() + "\n");
 			}
 			if(queries.length() > 0) {
-				queryOutput = CrudqlProcessor.process(queries, user, false);
+				Program prog = CrudqlProcessor.getParseTree(queries, user, false);
+				SemanticExceptionHandler exceptionHandler = new SemanticExceptionHandler(tableCrud.getAll(user), prog.vars, false);
+				exceptionHandler.handle(prog.expressions);
+				if(exceptionHandler.semanticErrors.isEmpty()) {
+					queryOutput = CrudqlProcessor.process(prog, user, false);
+				} else {
+					for(String error: exceptionHandler.semanticErrors) {
+						queryOutput += (error + "<br/>");
+					}
+				}
 			}
 			request.setAttribute("formQueries", queries);
 		}
@@ -70,7 +85,21 @@ public class Crudql extends HttpServlet {
 		request.setAttribute("tab2", tab.equals("tab2") ? "active" : "");
 		request.setAttribute("tab3", tab.equals("tab3") ? "active" : "");
 		System.out.println("Query: " + query);
-		String queryResult = CrudqlProcessor.process(query, user, true);
+		Program prog = CrudqlProcessor.getParseTree(query, user, true);
+		String queryResult = "";
+		if(prog != null) {
+			SemanticExceptionHandler exceptionHandler = new SemanticExceptionHandler(tableCrud.getAll(user), prog.vars, true);
+			exceptionHandler.handle(prog.expressions);
+			if(exceptionHandler.semanticErrors.isEmpty()) {
+				queryResult = CrudqlProcessor.process(prog, user, true);
+			} else {
+				for(String error: exceptionHandler.semanticErrors) {
+					queryResult += (error + "<br/>");
+				}
+			}
+		} else {
+			queryResult = CrudqlErrorListener.errorMsg;
+		}
 		request.setAttribute("queryResult", queryResult);
 		doGet(request, response);
 	}
