@@ -1,4 +1,4 @@
-// Generated from antlr/Crudql.g4 by ANTLR 4.9.2
+// Generated from Crudql.g4 by ANTLR 4.9.2
 
 	package antlr;
 
@@ -72,6 +72,12 @@ public interface CrudqlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCreateForm(CrudqlParser.CreateFormContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CrudqlParser#updateForm}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUpdateForm(CrudqlParser.UpdateFormContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CrudqlParser#createFormReport}.
 	 * @param ctx the parse tree

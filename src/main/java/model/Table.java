@@ -17,6 +17,16 @@ public class Table {
 	public ArrayList<Field> getFields() {
 		return fields;
 	}
+	public Field getFieldByName(String name) {
+		if(name != null) {
+			for(Field f : fields) {
+				if(f.getName().equals(name)) {
+					return f;
+				}
+			}
+		}
+		return null;
+	}
 	public void setFields(ArrayList<Field> fields) {
 		this.fields = fields;
 	}
@@ -31,5 +41,24 @@ public class Table {
 	}
 	public void setUser(User user) {
 		this.user = user;
+	}
+	
+	public Pair<ArrayList<Field>, ArrayList<Field>> compareTableField(Table table2) {
+		ArrayList<Field> has = new ArrayList<Field>();
+		ArrayList<Field> hasNot = new ArrayList<Field>();
+		for(Field f2 : table2.getFields()) {
+			boolean flag = true;
+			for(Field f1: fields) {
+				if(f2.getName().equals(f1.getName())) {
+					has.add(f2);
+					flag = false;
+					break;
+				}
+			}
+			if(flag) {
+				hasNot.add(f2);
+			}
+		}
+		return new Pair<ArrayList<Field>, ArrayList<Field>>(has, hasNot);
 	}
 }

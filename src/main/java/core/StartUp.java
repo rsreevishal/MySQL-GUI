@@ -20,6 +20,8 @@ public class StartUp {
 			st.executeUpdate();
 			st = sqlConnection.prepareStatement("CREATE TABLE IF NOT EXISTS mysqlgui_form_inputs(id INT NOT NULL AUTO_INCREMENT, table_id INT, name VARCHAR(50), field VARCHAR(50), link VARCHAR(50), args VARCHAR(100), type VARCHAR(50), PRIMARY KEY(id), FOREIGN KEY (table_id) REFERENCES mysqlgui_tables(id) ON DELETE CASCADE);");
 			st.executeUpdate();
+			st = sqlConnection.prepareStatement("CREATE TABLE IF NOT EXISTS mysqlgui_form_tries(id VARCHAR(50) NOT NULL, user INT NOT NULL, trie VARCHAR(500), PRIMARY KEY(id, user));");
+			st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -1,5 +1,7 @@
 package expression;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,5 +27,18 @@ public class ListToken extends Expression {
 		data.put("args", args.substring(1));
 		String result = FTLConvertor.convert(this, data);
 		return result;
+	}
+	@Override
+	public String toString() {
+		String result = "";
+		for(String val: values) {
+			val = "'" + val + "'";
+			result += ("," + val);
+		}
+		return result.substring(1);
+	}
+	
+	public static ArrayList<String> fromString(String val) {
+		return new ArrayList<String>(Arrays.asList(val.split(",")));
 	}
 }

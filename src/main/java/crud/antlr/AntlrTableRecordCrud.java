@@ -1,6 +1,8 @@
 package crud.antlr;
 
 import java.util.ArrayList;
+
+import crud.FormTrieCrud;
 import crud.TableCrud;
 import crud.TableRecordCrud;
 import expression.*;
@@ -11,6 +13,8 @@ import model.PrimaryKey;
 import model.Table;
 import model.TableRecord;
 import model.TableRecordField;
+import model.Trie;
+import model.TrieDifference;
 import model.User;
 import model.filters.Condition;
 import model.filters.EqualsCondition;
@@ -22,10 +26,14 @@ public class AntlrTableRecordCrud {
 	private TableCrud tableCrud;
 	private TableRecordCrud tableRecordCrud;
 	private User user;
+	private FormTrieCrud formTrieCrud;
+	private Trie trie;
 	public AntlrTableRecordCrud(User _user) {
 		tableCrud = new TableCrud();
 		tableRecordCrud = new TableRecordCrud();
 		user = _user;
+		formTrieCrud = new FormTrieCrud();
+		trie = formTrieCrud.getAll(user);
 	}
 
 	public String create(AddExpr expr) {
@@ -200,12 +208,55 @@ public class AntlrTableRecordCrud {
 		}
 		table.setFields(fields);
 		Table result = table;
-		if(createNew) {
-			 table.setUser(expr.getUser());
-			 result = tableCrud.create(table);
-			 tableCrud.saveFormQuery(result.getId(), expr);
-		}
 		String form = expr.toHTML();
+		if(createNew) {
+			table.setUser(expr.getUser());
+			if(!trie.findAll(expr.trieKeys())) {
+				result = tableCrud.create(table);
+				tableCrud.saveFormQuery(result.getId(), expr);
+				formTrieCrud.add(table.getName(), user, expr.trieKeysToString());
+			} else {
+				Table oldTable = tableCrud.get(table.getName(), user);
+				System.out.println("Form exists");
+				ArrayList<TrieDifference> difference = trie.difference(table, expr.trieKeys());
+				for(TrieDifference td: difference) {
+					System.out.println(String.format("%s,%s,%s", td.getDifferenceType(), td.getTablename(), td.getField().getName()));
+					switch(td.getDifferenceType()) {
+						case NEW_FIELD: {
+							tableCrud.createTableField(oldTable, td.getField());
+							tableCrud.createFormField(oldTable.getId(), oldTable.getName(), expr.getInputByName(td.getField().getName()));
+							formTrieCrud.update(oldTable.getName(), user, expr.trieKeysToString());
+							break;
+						}
+						case NEW_TYPE: {
+							int[][] compabilityMatrix = {{1,0,1,0,0,1,1,1},
+														{0,1,0,0,0,0,0,0},
+														{1,0,1,0,0,1,1,1},
+														{1,0,1,1,1,1,1,1},
+														{1,0,1,0,1,1,1,1},
+														{1,0,1,1,1,1,1,1},
+														{1,0,1,1,1,1,1,1},
+														{0,0,0,0,0,0,0,1}};
+							FormInputExpr oldInput = tableCrud.getFormField(oldTable.getId(), td.getField().getName());
+							FormInputExpr newInput = expr.getInputByName(td.getField().getName());
+							if(compabilityMatrix[oldInput.inputType.ordinal()][newInput.inputType.ordinal()] == 1) {
+								System.out.println(String.format("%s to %s is supported", oldInput.inputType, newInput.inputType));
+								tableCrud.changeType(oldTable.getId(), newInput);
+								tableCrud.changeArgs(oldTable.getId(), newInput);
+							} else {
+								System.out.println(String.format("%s to %s is not supported", oldInput.inputType, newInput.inputType));
+							}
+							break;
+						}
+						case NEW_ARGS: {
+							tableCrud.changeArgs(oldTable.getId(), expr.getInputByName(td.getField().getName()));
+							formTrieCrud.update(oldTable.getName(), user, expr.trieKeysToString());
+							break;
+						}
+					}
+				}
+			}
+		}
 		return form;
 	}
 	

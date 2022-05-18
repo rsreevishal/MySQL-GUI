@@ -1,4 +1,4 @@
-// Generated from antlr/Crudql.g4 by ANTLR 4.9.2
+// Generated from Crudql.g4 by ANTLR 4.9.2
 
 	package antlr;
 
@@ -133,6 +133,18 @@ public class CrudqlBaseListener implements CrudqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	 public void exitCreateForm(CrudqlParser.CreateFormContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void enterUpdateForm(CrudqlParser.UpdateFormContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	 public void exitUpdateForm(CrudqlParser.UpdateFormContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

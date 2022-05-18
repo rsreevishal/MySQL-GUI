@@ -22,6 +22,7 @@ import expression.ViewExpr;
 import model.Field;
 import model.Pair;
 import model.Table;
+import utils.InputValidator;
 
 public class SemanticExceptionHandler {
 	public ArrayList<String> semanticErrors;
@@ -44,10 +45,11 @@ public class SemanticExceptionHandler {
 	public void handle(List<Expression> expressions) {
 		for(Expression expression: expressions) {
 			if(expression instanceof FormExpr) {
-				Table table = containTable(((FormExpr) expression).idToken);
-				if ((table != null && this.createNew) || (tables.contains(((FormExpr) expression).idToken.id))) {
+//				Table table = containTable(((FormExpr) expression).idToken);
+				if (this.createNew && (tables.contains(((FormExpr) expression).idToken.id))) {
+//				if ((table != null && this.createNew) || (tables.contains(((FormExpr) expression).idToken.id))) {
 					semanticErrors.add(String
-							.format("<p><span style='color:red;'>%s</span> already exists in the database!</p>", ((FormExpr) expression).idToken.id));
+							.format("<p><span style='color:red;'>%s</span> already exists!</p>", ((FormExpr) expression).idToken.id));
 				} else {
 					tables.add(((FormExpr) expression).idToken.id);
 				}
@@ -124,6 +126,10 @@ public class SemanticExceptionHandler {
 				}
 				for(String val: ((AddExpr) expression).listToken.values) {
 					val = val.substring(1, val.length() -1 );
+					if(InputValidator.validateHtml(val)) {
+						semanticErrors
+						.add("<p><span style='color:red;'>No HTML tags are allowed as input!</span></p>");
+					}
 					if(val.length() > 0) {
 						if (val.charAt(0) == '$' && !this.vars.containsKey(val)) {
 							semanticErrors
@@ -205,6 +211,7 @@ public class SemanticExceptionHandler {
 		}
 		return null;
 	}
+	
 	private boolean containColumn(Table table, IdToken col) {
 		for (Table t : tablesDB) {
 			if (t.getId() == table.getId()) {

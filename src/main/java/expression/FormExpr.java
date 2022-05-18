@@ -19,6 +19,15 @@ public class FormExpr extends Expression {
 	public void addInput(FormInputExpr input) {
 		formInputs.add(input);
 	}
+	
+	public FormInputExpr getInputByName(String name) {
+		for(FormInputExpr fie: formInputs) {
+			if(fie.idToken.id.equals(name)) {
+				return fie;
+			}
+		}
+		return null;
+	}
 
 	@Override
 	public String toHTML() {
@@ -47,5 +56,29 @@ public class FormExpr extends Expression {
 	}
 	public void setUser(User user) {
 		this.user = user;
+	}
+	public ArrayList<ArrayList<String>> trieKeys() {
+		ArrayList<ArrayList<String>> keys = new ArrayList<ArrayList<String>>();
+		for(FormInputExpr fie: formInputs) {
+			ArrayList<String> key1 = new ArrayList<String>();
+			key1.add("t_" + idToken.id);
+			key1.add("fn_" + fie.idToken.id);
+			key1.add("ft_" + fie.inputType.toString());
+			key1.add("fa_" + fie.args.values);
+			keys.add(key1);
+		}
+		return keys;
+	}
+	public String trieKeysToString() {
+		ArrayList<ArrayList<String>> keys = trieKeys();
+		String result = "";
+		for(ArrayList<String> key: keys) {
+			String sKey = "";
+			for(String val: key) {
+				sKey += "&" + val;
+			}
+			result += "#" + sKey.substring(1);
+		}
+		return result.substring(1);
 	}
 }

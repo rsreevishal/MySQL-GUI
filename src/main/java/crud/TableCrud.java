@@ -11,6 +11,9 @@ import core.DBConnector;
 import crud.orm.TableORM;
 import expression.ConditionExpr;
 import expression.FormReportExpr;
+import expression.IdToken;
+import expression.InputType;
+import expression.ListToken;
 import expression.FormExpr;
 import expression.FormInputExpr;
 import model.Field;
@@ -43,24 +46,50 @@ public class TableCrud {
             	pk = rs.getInt(1);
             }
             table.setId(pk);
-			for(Field f: table.getFields()) {
+			orm.create(table);
+			for(Field field: table.getFields()) {
 				st = sqlConnection.prepareStatement("insert into mysqlgui_table_fields(table_id, fieldtype, fieldname, constraints) values(?, ?, ?, ?)");
-				st.setInt(1, pk);
-				st.setString(2, f.getFieldType().toString());
-				st.setString(3, f.getName());
+				st.setInt(1, table.getId());
+				st.setString(2, field.getFieldType().toString());
+				st.setString(3, field.getName());
 				StringBuilder constraints = new StringBuilder("");
-				for(FieldConstraint fc: f.getFieldConstraint()) {
+				for(FieldConstraint fc: field.getFieldConstraint()) {
 					constraints.append(fc).append(',');
 				}
-				st.setString(4, constraints.toString().substring(0, constraints.length() - 1));
+				if(constraints.length() > 0) {
+					st.setString(4, constraints.toString().substring(0, constraints.length() - 1));
+				} else {
+					st.setString(4, "");
+				}
 				st.executeUpdate();
 			}
-			orm.create(table);
 			return table;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void createTableField(Table table, Field field) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_table_fields(table_id, fieldtype, fieldname, constraints) values(?, ?, ?, ?)");
+			st.setInt(1, table.getId());
+			st.setString(2, field.getFieldType().toString());
+			st.setString(3, field.getName());
+			StringBuilder constraints = new StringBuilder("");
+			for(FieldConstraint fc: field.getFieldConstraint()) {
+				constraints.append(fc).append(',');
+			}
+			if(constraints.length() > 0) {
+				st.setString(4, constraints.toString().substring(0, constraints.length() - 1));
+			} else {
+				st.setString(4, "");
+			}
+			st.executeUpdate();
+			orm.addTableColumn(table.getName(), field);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void delete(String tablename, int id) {
@@ -162,22 +191,67 @@ public class TableCrud {
 		return null;
 	}
 	
-	public void saveFormQuery(int table_id, FormExpr expr) {
+	public void createFormField(int table_id, String tablename, FormInputExpr fie) {
 		try {
-			for(FormInputExpr fie : expr.formInputs) {
-				PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_form_inputs(table_id, field, link, args, type, name) values(?, ?, ?, ?, ?, ?);");
-				st.setInt(1, table_id);
-				st.setString(2, fie.idToken.id);
-				st.setString(3, fie.inputType.toString());
-				String args = "";
-				for(String arg: fie.args.values) {
-					args += String.format(",'%s'", arg);
-				}
-				st.setString(4, args.substring(1));
-				st.setString(5, TableQueryType.FORM.toString());
-				st.setString(6, expr.idToken.id);
-				st.executeUpdate();
+			PreparedStatement st = sqlConnection.prepareStatement("insert into mysqlgui_form_inputs(table_id, field, link, args, type, name) values(?, ?, ?, ?, ?, ?);");
+			st.setInt(1, table_id);
+			st.setString(2, fie.idToken.id);
+			st.setString(3, fie.inputType.toString());
+			String args = "";
+			for(String arg: fie.args.values) {
+				args += String.format(",'%s'", arg);
 			}
+			st.setString(4, args.substring(1));
+			st.setString(5, TableQueryType.FORM.toString());
+			st.setString(6, tablename);
+			st.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public FormInputExpr getFormField(int table_id, String fieldName) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("select field, link, args from mysqlgui_form_inputs where table_id=? and field=? limit 1;");
+			st.setInt(1, table_id);
+			st.setString(2, fieldName);
+			ResultSet result = st.executeQuery();
+			if(result.next()) {
+				FormInputExpr fie = new FormInputExpr(new IdToken(result.getString(1)),
+						InputType.valueOf(result.getString(2)), new ListToken(ListToken.fromString(result.getString(3))));
+				return fie;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public void saveFormQuery(int table_id, FormExpr expr) {
+		for(FormInputExpr fie : expr.formInputs) {
+			createFormField(table_id, expr.idToken.id, fie);
+		}
+	}
+	
+	public void changeArgs(int table_id, FormInputExpr expr) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("update mysqlgui_form_inputs set args=? where table_id=? and field=? and type='FORM';");
+			st.setString(1, expr.args.toString());
+			st.setInt(2, table_id);
+			st.setString(3, expr.idToken.id);
+			st.executeUpdate();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void changeType(int table_id, FormInputExpr expr) {
+		try {
+			PreparedStatement st = sqlConnection.prepareStatement("update mysqlgui_form_inputs set link=? where table_id=? and field=? and type='FORM';");
+			st.setString(1, expr.inputType.toString());
+			st.setInt(2, table_id);
+			st.setString(3, expr.idToken.id);
+			st.executeUpdate();
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}

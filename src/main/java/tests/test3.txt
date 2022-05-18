@@ -9,3 +9,9 @@ CREATE FORM Mentor [
  Salary NUMBER ('100000','1000000')
  Email LINK ('Student','Email')
 ]
+
+CREATE FORM Student [
+ Name TEXT ('3','20')
+ Email TEXT ('5','30')
+ Salary NUMBER ('100000','1000000')
+]

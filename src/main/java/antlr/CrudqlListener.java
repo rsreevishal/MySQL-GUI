@@ -1,4 +1,4 @@
-// Generated from antlr/Crudql.g4 by ANTLR 4.9.2
+// Generated from Crudql.g4 by ANTLR 4.9.2
 
 	package antlr;
 
@@ -109,6 +109,16 @@ public interface CrudqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCreateForm(CrudqlParser.CreateFormContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CrudqlParser#updateForm}.
+	 * @param ctx the parse tree
+	 */
+	void enterUpdateForm(CrudqlParser.UpdateFormContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CrudqlParser#updateForm}.
+	 * @param ctx the parse tree
+	 */
+	void exitUpdateForm(CrudqlParser.UpdateFormContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CrudqlParser#createFormReport}.
 	 * @param ctx the parse tree

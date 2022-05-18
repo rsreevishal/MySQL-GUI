@@ -38,6 +38,8 @@ storeColView: VAR '=' '(' colView ')';
 
 createForm: 'CREATE FORM' ID '[' formInput+ ']';
 
+updateForm: 'FORM' ID '[' formInput+ ']';
+
 createFormReport: 'CREATE VIEW' ID 'FOR' ID '[' condition+ ']';
 
 formInput: ID inputType LIST;

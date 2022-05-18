@@ -14,6 +14,7 @@ import antlr.CrudqlParser.DeleteContext;
 import antlr.CrudqlParser.FormInputContext;
 import antlr.CrudqlParser.StoreColViewContext;
 import antlr.CrudqlParser.UpdateContext;
+import antlr.CrudqlParser.UpdateFormContext;
 import antlr.CrudqlParser.ViewAllContext;
 import antlr.CrudqlParser.ViewContext;
 import model.User;
@@ -47,6 +48,27 @@ public class ParseTreeToExpression extends CrudqlBaseVisitor<Expression> {
 		return expr;
 	}
 
+	@Override
+	public Expression visitUpdateForm(UpdateFormContext ctx) {
+		IdToken idToken = new IdToken(ctx.ID().getText());
+		ArrayList<FormInputExpr> formInputs = new ArrayList<FormInputExpr>();
+		for(FormInputContext fictx: ctx.formInput()) {
+			IdToken fIdToken = new IdToken(fictx.ID().getText());
+			String argStr = fictx.LIST().getText();
+			String[] argsStr = argStr.substring(1, argStr.length() - 1).split(",");
+			ArrayList<String> args = new ArrayList<String>();
+			for(String arg: argsStr) {
+				args.add(arg.substring(1, arg.length() - 1));
+			}
+			InputType inputType = InputType.valueOf(fictx.inputType().getText());
+			FormInputExpr formInput = new FormInputExpr(fIdToken, inputType, new ListToken(args));
+			formInputs.add(formInput);
+		}	
+		FormExpr expr = new FormExpr(idToken, formInputs);
+		expr.setUser(user);
+		return expr;
+	}
+	
 	@Override
 	public Expression visitCreateFormReport(CreateFormReportContext ctx) {
 		IdToken reportIdToken = new IdToken(ctx.ID().get(0).getText());

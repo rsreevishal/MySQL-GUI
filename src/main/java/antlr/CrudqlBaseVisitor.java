@@ -1,4 +1,4 @@
-// Generated from antlr/Crudql.g4 by ANTLR 4.9.2
+// Generated from Crudql.g4 by ANTLR 4.9.2
 
 	package antlr;
 
@@ -83,6 +83,13 @@ public class CrudqlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	 public T visitCreateForm(CrudqlParser.CreateFormContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	 public T visitUpdateForm(CrudqlParser.UpdateFormContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

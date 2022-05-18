@@ -37,6 +37,20 @@ public class TableORM {
 		}
 	}
 	
+	public void addTableColumn(String tablename, Field field) {
+		try {
+			String query = String.format("ALTER TABLE %s ADD %s %s NULL ;", tablename, field.getName(), FieldType.filter(field.getFieldType()));
+			System.out.println("Add table column query: " + query);
+			PreparedStatement st = sqlConnection.prepareStatement(query);
+			st.executeUpdate();
+			for (FieldConstraint fc : field.getFieldConstraint()) {
+				this.addConstraints(tablename, field.getName(), fc, field.getFieldType());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void delete(String tablename) {
 		try {
 			String query = String.format("DROP TABLE %s;", tablename);
